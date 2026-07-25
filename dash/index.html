@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 768px; --vh: 7.68px; overflow: visible; scrollbar-width: none; font-size: clamp(12px, 10.2241px + 0.4228vw, 16px);">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encrypted Dashboard</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cejyg4f1mtjhzf9b.canvacode.com/_sdk/c939c145c3c74230.editing_sdk.js" integrity="sha512-jh2pv/gl9Gzzn5dxfzwQO4wkqtnAQIim+LIUDYfVu2cdqPkQV2MqbjsDUW5IYbrSZFjRlOBrIWzlvWDXQYxOjg=="></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --ink: #07110f;
+      --panel: rgba(13, 28, 24, .86);
+      --line: rgba(188, 217, 203, .16);
+      --text: #f1f5ed;
+      --muted: #9bb0a6;
+      --accent: #f0b84b;
+      --danger: #ff7a73;
+      --success: #81d4a4;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100%; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "DM Sans", sans-serif;
+      background: var(--ink);
+    }
+
+    .app-wrapper {
+      position: relative;
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 8% 7%, rgba(39, 122, 91, .28), transparent 34rem),
+        radial-gradient(circle at 90% 12%, rgba(240, 184, 75, .1), transparent 28rem);
+    }
+
+    .app-wrapper::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: .24;
+      background-image:
+        linear-gradient(rgba(184, 218, 201, .07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(184, 218, 201, .07) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: linear-gradient(to bottom, black, transparent 90%);
+    }
+
+    .glass-panel {
+      border: 1px solid var(--line);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .27);
+      backdrop-filter: blur(18px);
+    }
+
+    .mono { font-family: "Space Mono", monospace; }
+
+    .focus-ring:focus-visible {
+      outline: 3px solid rgba(240, 184, 75, .62);
+      outline-offset: 3px;
+    }
+
+    .field {
+      width: 100%;
+      border: 1px solid rgba(190, 216, 203, .18);
+      background: rgba(3, 12, 10, .6);
+      color: #f7faf6;
+      transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    .field::placeholder { color: #6f857b; }
+
+    .field:focus {
+      outline: none;
+      border-color: rgba(240, 184, 75, .82);
+      box-shadow: 0 0 0 4px rgba(240, 184, 75, .11);
+      background: rgba(3, 12, 10, .84);
+    }
+
+    .action {
+      transition: transform .18s ease, filter .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .action:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.06); }
+    .action:active:not(:disabled) { transform: translateY(0); }
+    .action:disabled { cursor: not-allowed; opacity: .48; }
+
+    .nav-button[aria-current="page"] {
+      color: #172016;
+      background: var(--accent);
+      border-color: rgba(240, 184, 75, .85);
+    }
+
+    .dashboard-view[hidden] { display: none !important; }
+
+    .page-reveal { animation: reveal .6s cubic-bezier(.2,.75,.2,1) both; }
+    .delay-1 { animation-delay: .08s; }
+    .delay-2 { animation-delay: .16s; }
+
+    .note-card {
+      animation: reveal .38s cubic-bezier(.2,.75,.2,1) both;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .note-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(240, 184, 75, .32);
+      background: rgba(17, 42, 34, .94);
+    }
+
+    .modal-backdrop {
+      background: rgba(1, 8, 6, .8);
+      backdrop-filter: blur(12px);
+    }
+
+    .segmented-action {
+      box-shadow: inset 0 0 0 1px rgba(240, 184, 75, .25), 0 12px 35px rgba(0, 0, 0, .18);
+    }
+
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+  <script src="https://cejyg4f1mtjhzf9b.canvacode.com/_sdk/935a53bc2e11fb8d.data_sdk.js" type="text/javascript" integrity="sha512-qr2oyPnEys1WebcOABaRh6hG77r5PWpqeWW6JTKbRJqly/INsfBi31CVNlTmHqjgeLpkVmmHZJUdxSx/32tOFQ=="></script>
+  <script src="https://cejyg4f1mtjhzf9b.canvacode.com/_sdk/6030e540d4419216.resizing_sdk.js" type="text/javascript" integrity="sha512-b5KWzyoXsbWP4smq4sftIi6Kts4YVBpBsz0BwCViwbBJkK64a3/Z6ZMdWA+qnplNcXw4mhZeqvQi3mOosiRJdA=="></script>
+ <style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0px}.inset-y-0{top:0px;bottom:0px}.bottom-5{bottom:1.25rem}.left-1\/2{left:50%}.right-0{right:0px}.right-1{right:0.25rem}.top-0{top:0px}.z-10{z-index:10}.z-50{z-index:50}.z-\[60\]{z-index:60}.mx-auto{margin-left:auto;margin-right:auto}.my-1{margin-top:0.25rem;margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-6{margin-bottom:1.5rem}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-2{margin-top:0.5rem}.mt-3{margin-top:0.75rem}.mt-4{margin-top:1rem}.mt-5{margin-top:1.25rem}.mt-6{margin-top:1.5rem}.mt-7{margin-top:1.75rem}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-10{height:2.5rem}.h-12{height:3rem}.h-16{height:4rem}.h-32{height:8rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-52{height:13rem}.h-6{height:1.5rem}.min-h-44{min-height:11rem}.min-h-\[24rem\]{min-height:24rem}.min-h-\[32rem\]{min-height:32rem}.w-10{width:2.5rem}.w-12{width:3rem}.w-16{width:4rem}.w-32{width:8rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-52{width:13rem}.w-6{width:1.5rem}.w-full{width:100%}.min-w-0{min-width:0px}.max-w-2xl{max-width:42rem}.max-w-3xl{max-width:48rem}.max-w-\[1500px\]{max-width:1500px}.max-w-\[calc\(100\%-2rem\)\]{max-width:calc(100% - 2rem)}.max-w-md{max-width:28rem}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.-translate-x-1\/2{--tw-translate-x:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-y-16{--tw-translate-y:-4rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.translate-x-16{--tw-translate-x:4rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.resize-y{resize:vertical}.flex-col{flex-direction:column}.flex-col-reverse{flex-direction:column-reverse}.flex-wrap{flex-wrap:wrap}.place-items-center{place-items:center}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-5{gap:1.25rem}.gap-6{gap:1.5rem}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.break-all{word-break:break-all}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-\[1\.6rem\]{border-radius:1.6rem}.rounded-\[1\.8rem\]{border-radius:1.8rem}.rounded-\[2rem\]{border-radius:2rem}.rounded-full{border-radius:9999px}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-r{border-right-width:1px}.border-t{border-top-width:1px}.border-amber-300\/15{border-color:rgb(252 211 77 / 0.15)}.border-amber-300\/20{border-color:rgb(252 211 77 / 0.2)}.border-amber-300\/25{border-color:rgb(252 211 77 / 0.25)}.border-black\/20{border-color:rgb(0 0 0 / 0.2)}.border-emerald-200\/15{border-color:rgb(167 243 208 / 0.15)}.border-rose-300\/20{border-color:rgb(253 164 175 / 0.2)}.border-white\/10{border-color:rgb(255 255 255 / 0.1)}.border-white\/15{border-color:rgb(255 255 255 / 0.15)}.bg-\[\#10251f\]{--tw-bg-opacity:1;background-color:rgb(16 37 31 / var(--tw-bg-opacity, 1))}.bg-\[\#152d26\]{--tw-bg-opacity:1;background-color:rgb(21 45 38 / var(--tw-bg-opacity, 1))}.bg-amber-300\/10{background-color:rgb(252 211 77 / 0.1)}.bg-black\/15{background-color:rgb(0 0 0 / 0.15)}.bg-black\/20{background-color:rgb(0 0 0 / 0.2)}.bg-emerald-200\/\[\.06\]{background-color:rgb(167 243 208 / .06)}.bg-white\/\[\.03\]{background-color:rgb(255 255 255 / .03)}.object-cover{object-fit:cover}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.py-7{padding-top:1.75rem;padding-bottom:1.75rem}.pb-5{padding-bottom:1.25rem}.pl-4{padding-left:1rem}.pr-12{padding-right:3rem}.pt-4{padding-top:1rem}.text-left{text-align:left}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-\[1\.02\]{line-height:1.02}.leading-relaxed{line-height:1.625}.tracking-\[-\.035em\]{letter-spacing:-.035em}.tracking-\[-\.045em\]{letter-spacing:-.045em}.tracking-\[-\.04em\]{letter-spacing:-.04em}.tracking-\[\.12em\]{letter-spacing:.12em}.tracking-\[\.13em\]{letter-spacing:.13em}.tracking-\[\.16em\]{letter-spacing:.16em}.text-\[\#9bb0a6\]{--tw-text-opacity:1;color:rgb(155 176 166 / var(--tw-text-opacity, 1))}.text-amber-200{--tw-text-opacity:1;color:rgb(253 230 138 / var(--tw-text-opacity, 1))}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77 / var(--tw-text-opacity, 1))}.text-emerald-100\/55{color:rgb(209 250 229 / 0.55)}.text-emerald-100\/70{color:rgb(209 250 229 / 0.7)}.text-emerald-200{--tw-text-opacity:1;color:rgb(167 243 208 / var(--tw-text-opacity, 1))}.text-rose-300{--tw-text-opacity:1;color:rgb(253 164 175 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.ring-1{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.ring-white\/15{--tw-ring-color:rgb(255 255 255 / 0.15)}.blur-2xl{--tw-blur:blur(40px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.hover\:text-amber-300:hover{--tw-text-opacity:1;color:rgb(252 211 77 / var(--tw-text-opacity, 1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}@media (min-width: 640px){.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.sm\:flex-row{flex-direction:row}.sm\:items-end{align-items:flex-end}.sm\:justify-between{justify-content:space-between}.sm\:border-r{border-right-width:1px}.sm\:border-t-0{border-top-width:0px}.sm\:border-white\/10{border-color:rgb(255 255 255 / 0.1)}.sm\:p-7{padding:1.75rem}.sm\:p-8{padding:2rem}.sm\:px-5{padding-left:1.25rem;padding-right:1.25rem}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\:px-7{padding-left:1.75rem;padding-right:1.75rem}.sm\:py-6{padding-top:1.5rem;padding-bottom:1.5rem}}@media (min-width: 768px){.md\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}}@media (min-width: 1024px){.lg\:sticky{position:sticky}.lg\:top-6{top:1.5rem}.lg\:h-\[calc\(100\*min\(var\(--vh\2c 1vh\)\2c 1vh\)-3rem\)\]{height:calc(100 * min(var(--vh,1vh),1vh) - 3rem)}.lg\:grid-cols-\[290px_minmax\(0\2c 1fr\)\]{grid-template-columns:290px minmax(0,1fr)}.lg\:overflow-y-auto{overflow-y:auto}.lg\:px-8{padding-left:2rem;padding-right:2rem}}@media (min-width: 1280px){.xl\:grid-cols-\[\.72fr_1\.28fr\]{grid-template-columns:.72fr 1.28fr}.xl\:grid-cols-\[1\.2fr_\.8fr\]{grid-template-columns:1.2fr .8fr}.xl\:flex-row{flex-direction:row}.xl\:items-center{align-items:center}.xl\:justify-between{justify-content:space-between}}</style></head>
+ <body data-template-id="__page-root" style="background-image: linear-gradient(rgb(7, 17, 15), rgb(7, 17, 15)) !important; background-clip: border-box !important; background-size: 100vw 100vh !important; min-height: 768px; overflow: hidden;">
+  <div class="app-wrapper">
+   <div class="relative z-10 mx-auto grid w-full max-w-[1500px] gap-6 px-4 py-4 sm:px-6 sm:py-6 lg:grid-cols-[290px_minmax(0,1fr)] lg:px-8">
+    <aside data-template-id="sidebar-panel" class="canva-sidebar glass-panel page-reveal rounded-[1.8rem] p-5 lg:sticky lg:top-6 lg:h-[calc(100*min(var(--vh,1vh),1vh)-3rem)] lg:overflow-y-auto" style="background-image: linear-gradient(rgba(13, 28, 24, 0.88), rgba(13, 28, 24, 0.88)) !important; background-clip: border-box !important;">
+     <div class="flex items-center gap-4 border-b border-white/10 pb-5"><img data-template-id="user-avatar" class="canva-image h-16 w-16 shrink-0 rounded-2xl object-cover ring-1 ring-white/15" loading="lazy" alt="Profile portrait of a young adult in a black coat against a dark background, featuring a calm expression." src="https://images.pexels.com/photos/10542445/pexels-photo-10542445.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800">
+      <div class="min-w-0">
+       <p data-template-id="account-label" class="canva-text mono uppercase tracking-[.16em]" data-canva-font-size="0.625rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YADW1-vpsoc_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.625rem !important;">Local dashboard</p>
+       <h2 id="sidebar-user-name" class="truncate text-lg font-bold text-white">Local User</h2>
+       <p id="sidebar-user-email" class="truncate text-sm text-[#9bb0a6]">user@example.com</p>
+      </div>
+     </div>
+     <nav class="mt-6" aria-label="Dashboard navigation">
+      <p data-template-id="navigation-label" class="canva-text mono mb-3 uppercase tracking-[.16em]" data-canva-font-size="0.625rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(114, 135, 125) !important; --canva-color: #72877dff; caret-color: rgb(114, 135, 125) !important; font-family: YADW1-vpsoc_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.625rem !important;">Dashboard</p>
+      <div class="space-y-2"><button data-view="overview" data-template-id="nav-overview" class="canva-button nav-button action focus-ring flex w-full items-center gap-3 rounded-2xl border border-white/10 px-4 py-3 text-left font-bold" type="button" aria-current="page" data-canva-font-size="1rem" style="background-image: linear-gradient(rgb(240, 184, 75), rgb(240, 184, 75)) !important; background-clip: border-box !important; color: rgb(23, 32, 22) !important; --canva-color: #172016ff; caret-color: rgb(23, 32, 22) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1rem !important;"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="layout-dashboard" class="lucide lucide-layout-dashboard h-5 w-5" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg> </button> <button data-view="profile" data-template-id="nav-profile" class="canva-button nav-button action focus-ring flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/[.03] px-4 py-3 text-left font-bold" type="button" data-canva-font-size="1rem" style="background-image: linear-gradient(rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)) !important; background-clip: border-box !important; color: rgb(217, 229, 223) !important; --canva-color: #d9e5dfff; caret-color: rgb(217, 229, 223) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1rem !important;" aria-current="false"> <i data-lucide="user-round" class="h-5 w-5" aria-hidden="true"></i> </button> <button data-view="notes" data-template-id="nav-notes" class="canva-button nav-button action focus-ring flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/[.03] px-4 py-3 text-left font-bold" type="button" data-canva-font-size="1rem" style="background-image: linear-gradient(rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)) !important; background-clip: border-box !important; color: rgb(217, 229, 223) !important; --canva-color: #d9e5dfff; caret-color: rgb(217, 229, 223) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1rem !important;" aria-current="false"> <i data-lucide="notebook-pen" class="h-5 w-5" aria-hidden="true"></i> </button>
+      </div>
+     </nav>
+     <section data-template-id="security-card" class="canva-card mt-6 rounded-3xl border border-amber-300/15 p-4" aria-labelledby="security-card-title" style="background-image: linear-gradient(rgba(240, 184, 75, 0.055), rgba(240, 184, 75, 0.055)) !important; background-clip: border-box !important;">
+      <div class="flex items-start gap-3">
+       <div class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-300/10 text-amber-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shield-check" class="lucide lucide-shield-check h-5 w-5" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+       </div>
+       <div>
+        <h3 id="security-card-title" data-template-id="security-title" class="canva-text font-bold" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(241, 245, 237) !important; --canva-color: #f1f5edff; caret-color: rgb(241, 245, 237) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1.1875rem !important;" data-canva-font-size="1.1875rem">Whole-dashboard security</h3>
+        <p data-template-id="security-copy" class="canva-text mt-1 leading-relaxed" data-canva-font-size="0.75rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.75rem !important;">Edit locally, then encrypt or restore the complete dashboard in one operation.</p>
+       </div>
+      </div>
+      <div class="mt-4 space-y-2 border-t border-white/10 pt-4">
+       <div class="flex items-center justify-between gap-3 text-sm"><span data-template-id="local-data-label" class="canva-text" data-canva-font-size="0.8125rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.8125rem !important;">Local data</span> <span id="local-data-status" class="font-semibold text-amber-200">In memory</span>
+       </div>
+       <div class="flex items-center justify-between gap-3 text-sm"><span data-template-id="global-data-label" class="canva-text" data-canva-font-size="0.8125rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.8125rem !important;">Global-ready data</span> <span id="global-data-status" class="font-semibold text-amber-200">Not encrypted</span>
+       </div>
+      </div>
+     </section><button id="clear-dashboard-button" data-template-id="clear-dashboard-button" class="canva-button action focus-ring mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-rose-300/20 px-4 py-3 font-semibold" type="button" style="background-image: linear-gradient(rgba(255, 122, 115, 0.05), rgba(255, 122, 115, 0.05)) !important; background-clip: border-box !important; color: rgb(255, 170, 165) !important; --canva-color: #ffaaa5ff; caret-color: rgb(255, 170, 165) !important;"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2" class="lucide lucide-trash-2 h-4 w-4" aria-hidden="true"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg> <span data-template-id="clear-dashboard-default" class="canva-text" data-canva-font-size="0.8125rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(255, 170, 165) !important; --canva-color: #ffaaa5ff; caret-color: rgb(255, 170, 165) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.8125rem !important;">Clear local dashboard</span> <span data-template-id="clear-dashboard-confirm" class="canva-text hidden" data-canva-font-size="0.8125rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(255, 208, 205) !important; --canva-color: #ffd0cdff; caret-color: rgb(255, 208, 205) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.8125rem !important;">Click again to clear</span> </button>
+    </aside>
+    <div class="min-w-0">
+     <header class="page-reveal delay-1 mb-6 flex flex-col gap-5 rounded-[1.8rem] border border-white/10 bg-black/15 px-5 py-6 sm:px-7 xl:flex-row xl:items-center xl:justify-between">
+      <div>
+       <div class="mb-3 flex flex-wrap items-center gap-3"><span data-template-id="privacy-badge" class="canva-tag mono inline-flex items-center gap-2 rounded-full border border-amber-300/25 px-3 py-1.5 uppercase tracking-[.16em]" data-canva-font-size="0.625rem" style="background-image: linear-gradient(rgba(240, 184, 75, 0.08), rgba(240, 184, 75, 0.08)) !important; background-clip: border-box !important; color: rgb(244, 200, 105) !important; --canva-color: #f4c869ff; caret-color: rgb(244, 200, 105) !important; font-family: YADW1-vpsoc_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.625rem !important;"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shield" class="lucide lucide-shield h-4 w-4" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> </span> <span class="mono text-xs uppercase tracking-[.13em] text-emerald-100/55">25 Jul 2026</span>
+       </div>
+       <h1 data-template-id="page-title" class="canva-text font-bold leading-[1.02] tracking-[-.045em]" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(241, 245, 237) !important; --canva-color: #f1f5edff; caret-color: rgb(241, 245, 237) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 2.75rem !important; letter-spacing: -0.04rem !important;" data-canva-font-size="2.75rem">Your encrypted dashboard.</h1>
+       <p data-template-id="page-subtitle" class="canva-text mt-3 max-w-3xl leading-relaxed" data-canva-font-size="1.0625rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 1.0625rem !important;">Edit everything in one local dashboard record, then encrypt the full JSON bundle or restore it with one private-PIN flow.</p>
+      </div>
+      <div class="segmented-action flex shrink-0 overflow-hidden rounded-2xl bg-[#10251f]" role="group" aria-label="Encrypt or decrypt dashboard"><button id="encrypt-button" data-template-id="encrypt-button" class="canva-button action focus-ring inline-flex items-center justify-center gap-2 border-r border-black/20 px-4 py-3.5 font-bold sm:px-5" type="button" data-canva-font-size="1rem" style="background-image: linear-gradient(rgb(240, 184, 75), rgb(240, 184, 75)) !important; background-clip: border-box !important; color: rgb(23, 32, 22) !important; --canva-color: #172016ff; caret-color: rgb(23, 32, 22) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1rem !important;"> <i data-lucide="lock-keyhole" class="h-5 w-5" aria-hidden="true"></i> </button> <button id="decrypt-button" data-template-id="decrypt-button" class="canva-button action focus-ring inline-flex items-center justify-center gap-2 px-4 py-3.5 font-bold sm:px-5" type="button" data-canva-font-size="1rem" style="background-image: linear-gradient(rgb(25, 56, 47), rgb(25, 56, 47)) !important; background-clip: border-box !important; color: rgb(229, 238, 233) !important; --canva-color: #e5eee9ff; caret-color: rgb(229, 238, 233) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1rem !important;"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="key-round" class="lucide lucide-key-round h-5 w-5" aria-hidden="true"><path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z"></path><circle cx="16.5" cy="7.5" r=".5"></circle></svg> </button>
+      </div>
+     </header>
+     <main>
+      <section id="overview-view" class="dashboard-view page-reveal delay-2" aria-labelledby="overview-heading">
+       <div class="grid gap-6 xl:grid-cols-[1.2fr_.8fr]">
+        <article data-template-id="welcome-panel" class="canva-panel glass-panel overflow-hidden rounded-[1.8rem]" style="background-image: linear-gradient(rgba(13, 28, 24, 0.86), rgba(13, 28, 24, 0.86)) !important; background-clip: border-box !important;">
+         <div class="relative p-6 sm:p-8">
+          <div class="absolute right-0 top-0 h-52 w-52 translate-x-16 -translate-y-16 rounded-full bg-amber-300/10 blur-2xl"></div>
+          <div class="relative">
+           <p data-template-id="overview-eyebrow" class="canva-text mono uppercase tracking-[.16em]" data-canva-font-size="0.6875rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(240, 184, 75) !important; --canva-color: #f0b84bff; caret-color: rgb(240, 184, 75) !important; font-family: YADW1-vpsoc_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.6875rem !important;">Simplified workflow</p>
+           <h2 id="overview-heading" data-template-id="overview-heading" class="canva-text mt-3 max-w-2xl font-bold tracking-[-.04em]" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(241, 245, 237) !important; --canva-color: #f1f5edff; caret-color: rgb(241, 245, 237) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 2.125rem !important;" data-canva-font-size="2.125rem">One local dashboard. One encrypted global bundle.</h2>
+           <p data-template-id="overview-copy" class="canva-text mt-4 max-w-2xl leading-relaxed" data-canva-font-size="1rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(169, 187, 178) !important; --canva-color: #a9bbb2ff; caret-color: rgb(169, 187, 178) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 1rem !important;">Profile edits and notes always save to intp_dashboard_user. Encrypt copies that complete JSON into intp_dashboard_private_encrypted; Decrypt restores it and rewrites the local record.</p><button data-view="profile" data-template-id="edit-profile-button" class="canva-button nav-shortcut action focus-ring mt-6 inline-flex items-center gap-2 rounded-2xl px-5 py-3 font-bold" type="button" data-canva-font-size="1rem" style="background-image: linear-gradient(rgb(240, 184, 75), rgb(240, 184, 75)) !important; background-clip: border-box !important; color: rgb(23, 32, 22) !important; --canva-color: #172016ff; caret-color: rgb(23, 32, 22) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1rem !important;"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil" class="lucide lucide-pencil h-4 w-4" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg> </button>
+          </div>
+         </div>
+         <div class="grid border-t border-white/10 sm:grid-cols-3">
+          <div class="p-5 sm:border-r sm:border-white/10">
+           <p data-template-id="profile-status-label" class="canva-text mono uppercase tracking-[.12em]" data-canva-font-size="0.625rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(114, 135, 125) !important; --canva-color: #72877dff; caret-color: rgb(114, 135, 125) !important; font-family: YADW1-vpsoc_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.625rem !important;">Profile</p>
+           <p id="profile-status-value" class="mt-2 text-xl font-bold text-white">Ready</p>
+          </div>
+          <div class="border-t border-white/10 p-5 sm:border-r sm:border-t-0 sm:border-white/10">
+           <p data-template-id="note-count-label" class="canva-text mono uppercase tracking-[.12em]" data-canva-font-size="0.625rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(114, 135, 125) !important; --canva-color: #72877dff; caret-color: rgb(114, 135, 125) !important; font-family: YADW1-vpsoc_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.625rem !important;">Local notes</p>
+           <p id="overview-note-count" class="mt-2 text-xl font-bold text-white">0</p>
+          </div>
+          <div class="border-t border-white/10 p-5 sm:border-t-0">
+           <p data-template-id="last-saved-label" class="canva-text mono uppercase tracking-[.12em]" data-canva-font-size="0.625rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(114, 135, 125) !important; --canva-color: #72877dff; caret-color: rgb(114, 135, 125) !important; font-family: YADW1-vpsoc_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.625rem !important;">Last local save</p>
+           <p id="last-saved-value" class="mt-2 text-sm font-bold text-white">Not saved yet</p>
+          </div>
+         </div>
+        </article>
+        <article data-template-id="storage-panel" class="canva-panel glass-panel rounded-[1.8rem] p-6 sm:p-7" style="background-image: linear-gradient(rgba(13, 28, 24, 0.86), rgba(13, 28, 24, 0.86)) !important; background-clip: border-box !important;">
+         <div class="flex items-center justify-between gap-4">
+          <div>
+           <p data-template-id="storage-eyebrow" class="canva-text mono uppercase tracking-[.16em]" data-canva-font-size="0.6875rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(129, 212, 164) !important; --canva-color: #81d4a4ff; caret-color: rgb(129, 212, 164) !important; font-family: YADW1-vpsoc_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.6875rem !important;">Storage map</p>
+           <h2 data-template-id="storage-heading" class="canva-text mt-2 font-bold" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(241, 245, 237) !important; --canva-color: #f1f5edff; caret-color: rgb(241, 245, 237) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1.5rem !important;" data-canva-font-size="1.5rem">Required keys</h2>
+          </div>
+          <div class="grid h-12 w-12 place-items-center rounded-2xl border border-emerald-200/15 bg-emerald-200/[.06] text-emerald-200"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="database" class="lucide lucide-database h-6 w-6" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5V19A9 3 0 0 0 21 19V5"></path><path d="M3 12A9 3 0 0 0 21 12"></path></svg>
+          </div>
+         </div>
+         <div class="mt-6 space-y-3">
+          <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+           <p data-template-id="uid-key-label" class="canva-text font-semibold" data-canva-font-size="0.875rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(217, 229, 223) !important; --canva-color: #d9e5dfff; caret-color: rgb(217, 229, 223) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.875rem !important;">Required device/user key</p><code class="mono mt-2 block break-all text-xs text-amber-200">wromo_uid</code>
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+           <p data-template-id="dashboard-key-label" class="canva-text font-semibold" data-canva-font-size="0.875rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(217, 229, 223) !important; --canva-color: #d9e5dfff; caret-color: rgb(217, 229, 223) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.875rem !important;">Decrypted local dashboard</p><code class="mono mt-2 block break-all text-xs text-amber-200">intp_dashboard_user</code>
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+           <p data-template-id="encrypted-key-label" class="canva-text font-semibold" data-canva-font-size="0.875rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(217, 229, 223) !important; --canva-color: #d9e5dfff; caret-color: rgb(217, 229, 223) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.875rem !important;">Encrypted global-ready dashboard</p><code class="mono mt-2 block break-all text-xs text-amber-200">intp_dashboard_private_encrypted</code>
+          </div>
+         </div>
+         <p data-template-id="storage-helper" class="canva-text mt-5 leading-relaxed" data-canva-font-size="0.8125rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.8125rem !important;">Encryption and decryption both require the wromo_uid value plus your private PIN. Neither can substitute for the other.</p>
+        </article>
+       </div>
+       <div class="mt-6 grid gap-6 md:grid-cols-3">
+        <article data-template-id="feature-card-local" class="canva-card glass-panel rounded-[1.6rem] p-5" style="background-image: linear-gradient(rgba(13, 28, 24, 0.82), rgba(13, 28, 24, 0.82)) !important; background-clip: border-box !important;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="hard-drive" class="lucide lucide-hard-drive h-6 w-6 text-amber-300" aria-hidden="true"><line x1="22" x2="2" y1="12" y2="12"></line><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path><line x1="6" x2="6.01" y1="16" y2="16"></line><line x1="10" x2="10.01" y1="16" y2="16"></line></svg>
+         <h3 data-template-id="feature-local-title" class="canva-text mt-4 font-bold" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(241, 245, 237) !important; --canva-color: #f1f5edff; caret-color: rgb(241, 245, 237) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1.125rem !important;" data-canva-font-size="1.125rem">Edit locally</h3>
+         <p data-template-id="feature-local-copy" class="canva-text mt-2 leading-relaxed" data-canva-font-size="0.8125rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.8125rem !important;">Every profile or note change updates the complete intp_dashboard_user JSON. Editing never sends data.</p>
+        </article>
+        <article data-template-id="feature-card-encryption" class="canva-card glass-panel rounded-[1.6rem] p-5" style="background-image: linear-gradient(rgba(13, 28, 24, 0.82), rgba(13, 28, 24, 0.82)) !important; background-clip: border-box !important;"><i data-lucide="package-lock" class="h-6 w-6 text-amber-300" aria-hidden="true"></i>
+         <h3 data-template-id="feature-encryption-title" class="canva-text mt-4 font-bold" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(241, 245, 237) !important; --canva-color: #f1f5edff; caret-color: rgb(241, 245, 237) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1.125rem !important;" data-canva-font-size="1.125rem">Encrypt all at once</h3>
+         <p data-template-id="feature-encryption-copy" class="canva-text mt-2 leading-relaxed" data-canva-font-size="0.8125rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.8125rem !important;">The app derives one AES-GCM key from wromo_uid plus PIN and seals the entire local dashboard into one envelope.</p>
+        </article>
+        <article data-template-id="feature-card-restore" class="canva-card glass-panel rounded-[1.6rem] p-5" style="background-image: linear-gradient(rgba(13, 28, 24, 0.82), rgba(13, 28, 24, 0.82)) !important; background-clip: border-box !important;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="refresh-cw" class="lucide lucide-refresh-cw h-6 w-6 text-amber-300" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg>
+         <h3 data-template-id="feature-restore-title" class="canva-text mt-4 font-bold" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(241, 245, 237) !important; --canva-color: #f1f5edff; caret-color: rgb(241, 245, 237) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1.125rem !important;" data-canva-font-size="1.125rem">Restore globally</h3>
+         <p data-template-id="feature-restore-copy" class="canva-text mt-2 leading-relaxed" data-canva-font-size="0.8125rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.8125rem !important;">Decrypt reads intp_dashboard_private_encrypted and replaces the whole local dashboard with its recovered contents.</p>
+        </article>
+       </div>
+      </section>
+      <section id="profile-view" class="dashboard-view" aria-labelledby="profile-heading" hidden="">
+       <div class="grid gap-6 xl:grid-cols-[.72fr_1.28fr]">
+        <article data-template-id="profile-summary-panel" class="canva-panel glass-panel rounded-[1.8rem] p-6 text-center sm:p-8" style="background-image: linear-gradient(rgba(13, 28, 24, 0.86), rgba(13, 28, 24, 0.86)) !important; background-clip: border-box !important;"><img data-template-id="profile-large-avatar" class="canva-image mx-auto h-32 w-32 rounded-[2rem] object-cover ring-1 ring-white/15" loading="lazy" alt="Profile portrait of a young adult in a black coat against a dark background, featuring a calm expression." src="https://images.pexels.com/photos/10542445/pexels-photo-10542445.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800">
+         <h2 id="profile-summary-name" class="mt-5 text-2xl font-bold text-white">Local User</h2>
+         <p id="profile-summary-email" class="mt-1 break-all text-[#9bb0a6]">user@example.com</p>
+         <div class="mt-6 rounded-2xl border border-white/10 bg-black/20 p-4 text-left">
+          <p data-template-id="profile-summary-note" class="canva-text leading-relaxed" data-canva-font-size="0.8125rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.8125rem !important;">This portrait is editable in Canva. Profile text and notes are part of the same local dashboard JSON.</p>
+         </div>
+        </article>
+        <article data-template-id="profile-form-panel" class="canva-panel glass-panel rounded-[1.8rem] p-6 sm:p-8" style="background-image: linear-gradient(rgba(13, 28, 24, 0.86), rgba(13, 28, 24, 0.86)) !important; background-clip: border-box !important;">
+         <p data-template-id="profile-eyebrow" class="canva-text mono uppercase tracking-[.16em]" data-canva-font-size="0.6875rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(240, 184, 75) !important; --canva-color: #f0b84bff; caret-color: rgb(240, 184, 75) !important; font-family: YADW1-vpsoc_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.6875rem !important;">Local dashboard record</p>
+         <h2 id="profile-heading" data-template-id="profile-heading" class="canva-text mt-2 font-bold tracking-[-.035em]" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(241, 245, 237) !important; --canva-color: #f1f5edff; caret-color: rgb(241, 245, 237) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 2rem !important;" data-canva-font-size="2rem">Profile settings</h2>
+         <p data-template-id="profile-helper" class="canva-text mt-2 leading-relaxed" data-canva-font-size="0.875rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.875rem !important;">Saving here changes only intp_dashboard_user. Use Encrypt when you are ready to create the global-ready bundle.</p>
+         <form id="profile-form" class="mt-7 space-y-5" novalidate="">
+          <div class="grid gap-5 sm:grid-cols-2">
+           <div><label for="profile-name" data-template-id="name-label" class="canva-text mb-2 block font-semibold" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(217, 229, 223) !important; --canva-color: #d9e5dfff; caret-color: rgb(217, 229, 223) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.875rem !important;" data-canva-font-size="0.875rem">Display name</label> <input id="profile-name" data-template-id="name-input" class="canva-input field focus-ring rounded-2xl px-4 py-3.5" type="text" maxlength="80" autocomplete="name" required="" placeholder="Your display name" data-canva-font-size="0.9375rem" style="color: rgb(247, 250, 246) !important; --canva-color: #f7faf6ff; caret-color: rgb(247, 250, 246) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.9375rem !important;">
+           </div>
+           <div><label for="profile-email" data-template-id="email-label" class="canva-text mb-2 block font-semibold" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(217, 229, 223) !important; --canva-color: #d9e5dfff; caret-color: rgb(217, 229, 223) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.875rem !important;" data-canva-font-size="0.875rem">Email address</label> <input id="profile-email" data-template-id="email-input" class="canva-input field focus-ring rounded-2xl px-4 py-3.5" type="email" maxlength="120" autocomplete="email" required="" placeholder="you@example.com" data-canva-font-size="0.9375rem" style="color: rgb(247, 250, 246) !important; --canva-color: #f7faf6ff; caret-color: rgb(247, 250, 246) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.9375rem !important;">
+           </div>
+          </div>
+          <div class="grid gap-5 sm:grid-cols-2">
+           <div><label for="profile-location" data-template-id="location-label" class="canva-text mb-2 block font-semibold" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(217, 229, 223) !important; --canva-color: #d9e5dfff; caret-color: rgb(217, 229, 223) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.875rem !important;" data-canva-font-size="0.875rem">Location</label> <input id="profile-location" data-template-id="location-input" class="canva-input field focus-ring rounded-2xl px-4 py-3.5" type="text" maxlength="100" autocomplete="address-level2" placeholder="City, country" data-canva-font-size="0.9375rem" style="color: rgb(247, 250, 246) !important; --canva-color: #f7faf6ff; caret-color: rgb(247, 250, 246) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.9375rem !important;">
+           </div>
+           <div><label for="profile-theme" data-template-id="theme-label" class="canva-text mb-2 block font-semibold" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(217, 229, 223) !important; --canva-color: #d9e5dfff; caret-color: rgb(217, 229, 223) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.875rem !important;" data-canva-font-size="0.875rem">Interface preference</label> <select id="profile-theme" class="field focus-ring rounded-2xl px-4 py-3.5"> <option value="forest">Forest dark</option> <option value="midnight">Midnight dark</option> <option value="auto">Follow browser</option> </select>
+           </div>
+          </div>
+          <p id="profile-error" class="hidden text-sm font-semibold text-rose-300" role="alert">Enter a name and a valid email address.</p><button id="save-profile-button" data-template-id="save-profile-button" class="canva-button action focus-ring inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3.5 font-bold" type="submit" data-canva-font-size="1rem" style="background-image: linear-gradient(rgb(240, 184, 75), rgb(240, 184, 75)) !important; background-clip: border-box !important; color: rgb(23, 32, 22) !important; --canva-color: #172016ff; caret-color: rgb(23, 32, 22) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1rem !important;"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="save" class="lucide lucide-save h-5 w-5" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> </button>
+         </form>
+        </article>
+       </div>
+      </section>
+      <section id="notes-view" class="dashboard-view" aria-labelledby="notes-heading" hidden="">
+       <div class="grid gap-6 xl:grid-cols-[.72fr_1.28fr]">
+        <article data-template-id="notes-composer-panel" class="canva-panel glass-panel rounded-[1.8rem] p-6 sm:p-7" style="background-image: linear-gradient(rgba(13, 28, 24, 0.86), rgba(13, 28, 24, 0.86)) !important; background-clip: border-box !important;">
+         <p data-template-id="notes-eyebrow" class="canva-text mono uppercase tracking-[.16em]" data-canva-font-size="0.6875rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(240, 184, 75) !important; --canva-color: #f0b84bff; caret-color: rgb(240, 184, 75) !important; font-family: YADW1-vpsoc_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.6875rem !important;">Local dashboard content</p>
+         <h2 id="notes-heading" data-template-id="notes-heading" class="canva-text mt-2 font-bold tracking-[-.035em]" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(241, 245, 237) !important; --canva-color: #f1f5edff; caret-color: rgb(241, 245, 237) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 2rem !important;" data-canva-font-size="2rem">Dashboard notes</h2>
+         <p data-template-id="notes-helper" class="canva-text mt-2 leading-relaxed" data-canva-font-size="0.875rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.875rem !important;">Add or edit notes freely. They remain decrypted in intp_dashboard_user until you choose Encrypt.</p>
+         <form id="note-form" class="mt-7 space-y-4" novalidate="">
+          <div><label for="note-title" data-template-id="note-title-label" class="canva-text mb-2 block font-semibold" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(217, 229, 223) !important; --canva-color: #d9e5dfff; caret-color: rgb(217, 229, 223) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.875rem !important;" data-canva-font-size="0.875rem">Note title</label> <input id="note-title" data-template-id="note-title-input" class="canva-input field focus-ring rounded-2xl px-4 py-3.5" type="text" maxlength="100" required="" placeholder="e.g. Project handoff" data-canva-font-size="0.9375rem" style="color: rgb(247, 250, 246) !important; --canva-color: #f7faf6ff; caret-color: rgb(247, 250, 246) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.9375rem !important;">
+          </div>
+          <div><label for="note-content" data-template-id="note-content-label" class="canva-text mb-2 block font-semibold" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(217, 229, 223) !important; --canva-color: #d9e5dfff; caret-color: rgb(217, 229, 223) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.875rem !important;" data-canva-font-size="0.875rem">Note content</label> <textarea id="note-content" data-template-id="note-content-input" class="canva-input field focus-ring min-h-44 resize-y rounded-2xl px-4 py-3.5 leading-relaxed" placeholder="e.g. New Post subtitle content" maxlength="4000" required="" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(247, 250, 246) !important; --canva-color: #f7faf6ff; caret-color: rgb(247, 250, 246) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.9375rem !important;" data-canva-font-size="0.9375rem"></textarea>
+          </div>
+          <p id="note-error" class="hidden text-sm font-semibold text-rose-300" role="alert">Add both a title and note.</p>
+          <div class="flex flex-col gap-3 sm:flex-row"><button id="save-note-button" data-template-id="save-note-button" class="canva-button action focus-ring inline-flex flex-1 items-center justify-center gap-2 rounded-2xl px-5 py-3.5 font-bold" type="submit" data-canva-font-size="1rem" style="background-image: linear-gradient(rgb(240, 184, 75), rgb(240, 184, 75)) !important; background-clip: border-box !important; color: rgb(23, 32, 22) !important; --canva-color: #172016ff; caret-color: rgb(23, 32, 22) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1rem !important;"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="save" class="lucide lucide-save h-5 w-5" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> </button> <button id="cancel-note-edit" data-template-id="cancel-note-edit" class="canva-button action focus-ring hidden items-center justify-center gap-2 rounded-2xl border border-white/15 px-5 py-3.5 font-semibold" type="button" data-canva-font-size="1rem" style="background-image: linear-gradient(rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04)) !important; background-clip: border-box !important; color: rgb(229, 238, 233) !important; --canva-color: #e5eee9ff; caret-color: rgb(229, 238, 233) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1rem !important;"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="x" class="lucide lucide-x h-5 w-5" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg> </button>
+          </div>
+         </form>
+        </article>
+        <article data-template-id="notes-library-panel" class="canva-panel glass-panel min-h-[32rem] rounded-[1.8rem] p-6 sm:p-7" style="background-image: linear-gradient(rgba(13, 28, 24, 0.86), rgba(13, 28, 24, 0.86)) !important; background-clip: border-box !important;">
+         <div class="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+           <h2 data-template-id="notes-library-heading" class="canva-text font-bold tracking-[-.035em]" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(241, 245, 237) !important; --canva-color: #f1f5edff; caret-color: rgb(241, 245, 237) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1.75rem !important;" data-canva-font-size="1.75rem">Local note library</h2>
+           <p data-template-id="notes-library-helper" class="canva-text mt-1" data-canva-font-size="0.875rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.875rem !important;">These notes are part of the complete local dashboard object.</p>
+          </div><span id="notes-count" class="mono rounded-full border border-white/10 bg-black/20 px-3 py-2 text-xs uppercase tracking-[.12em] text-emerald-100/70">0 notes</span>
+         </div>
+         <div id="notes-empty-state" class="flex min-h-[24rem] flex-col items-center justify-center px-4 text-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="file-plus-2" class="lucide lucide-file-plus-2 h-12 w-12 text-emerald-200" aria-hidden="true"><path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M3 15h6"></path><path d="M6 12v6"></path></svg>
+          <h3 data-template-id="notes-empty-heading" class="canva-text mt-5 font-bold" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(241, 245, 237) !important; --canva-color: #f1f5edff; caret-color: rgb(241, 245, 237) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1.4375rem !important;" data-canva-font-size="1.4375rem">No local notes yet</h3>
+          <p data-template-id="notes-empty-helper" class="canva-text mt-2 max-w-md leading-relaxed" data-canva-font-size="0.875rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.875rem !important;">Add a note on the left. It will be included the next time you encrypt the full dashboard.</p>
+         </div>
+         <div id="note-list" class="mt-5 grid gap-4" aria-live="polite"></div>
+        </article>
+       </div>
+      </section>
+     </main>
+     <footer class="py-7">
+      <p data-template-id="footer-note" class="canva-text text-center" data-canva-font-size="0.75rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(114, 135, 125) !important; --canva-color: #72877dff; caret-color: rgb(114, 135, 125) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.75rem !important;">The private PIN is never stored. Keep a secure backup: losing the PIN prevents recovery of old encrypted data.</p>
+     </footer>
+    </div>
+   </div>
+   <div id="pin-modal" class="modal-backdrop fixed inset-0 z-50 items-center justify-center p-4 flex" role="dialog" aria-modal="true" aria-labelledby="pin-heading-decrypt">
+    <section data-template-id="pin-dialog" class="canva-panel glass-panel w-full max-w-md rounded-[1.8rem] p-6 sm:p-7" style="background-image: linear-gradient(rgb(16, 37, 31), rgb(16, 37, 31)) !important; background-clip: border-box !important;">
+     <div class="flex items-start justify-between gap-4">
+      <div class="grid h-12 w-12 place-items-center rounded-2xl bg-amber-300/10 text-amber-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="key-round" class="lucide lucide-key-round h-6 w-6" aria-hidden="true"><path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z"></path><circle cx="16.5" cy="7.5" r=".5"></circle></svg>
+      </div><button id="close-pin-modal" class="focus-ring grid h-10 w-10 place-items-center rounded-xl border border-white/10 text-[#9bb0a6] hover:text-white" type="button" aria-label="Close PIN dialog"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="x" class="lucide lucide-x h-5 w-5" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg> </button>
+     </div>
+     <div id="pin-encrypt-copy" class="hidden">
+      <h2 id="pin-heading-encrypt" data-template-id="pin-heading-encrypt" class="canva-text mt-5 font-bold tracking-[-.035em]" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(241, 245, 237) !important; --canva-color: #f1f5edff; caret-color: rgb(241, 245, 237) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1.75rem !important;" data-canva-font-size="1.75rem">Encrypt the whole dashboard</h2>
+      <p data-template-id="pin-helper-encrypt" class="canva-text mt-2 leading-relaxed" data-canva-font-size="0.875rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.875rem !important;">Enter your private PIN. The app will combine it with wromo_uid and encrypt all intp_dashboard_user data at once.</p>
+     </div>
+     <div id="pin-decrypt-copy" class="">
+      <h2 id="pin-heading-decrypt" data-template-id="pin-heading-decrypt" class="canva-text mt-5 font-bold tracking-[-.035em]" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(241, 245, 237) !important; --canva-color: #f1f5edff; caret-color: rgb(241, 245, 237) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1.75rem !important;" data-canva-font-size="1.75rem">Decrypt and restore local data</h2>
+      <p data-template-id="pin-helper-decrypt" class="canva-text mt-2 leading-relaxed" data-canva-font-size="0.875rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(155, 176, 166) !important; --canva-color: #9bb0a6ff; caret-color: rgb(155, 176, 166) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.875rem !important;">Enter the PIN used for this encrypted bundle. Successful decryption will rewrite intp_dashboard_user.</p>
+     </div>
+     <div data-template-id="pin-warning" class="canva-banner mt-5 flex gap-3 rounded-2xl border border-amber-300/20 p-4" style="background-image: linear-gradient(rgba(240, 184, 75, 0.06), rgba(240, 184, 75, 0.06)) !important; background-clip: border-box !important;"><i data-lucide="triangle-alert" class="mt-0.5 h-5 w-5 shrink-0 text-amber-300" aria-hidden="true"></i>
+      <p data-template-id="pin-warning-text" class="canva-text leading-relaxed" data-canva-font-size="0.8125rem" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(243, 213, 150) !important; --canva-color: #f3d596ff; caret-color: rgb(243, 213, 150) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.8125rem !important;">If you lose the PIN, you lose access to the old global data. Save the latest local dashboard again with a new PIN to create a new encrypted version.</p>
+     </div>
+     <form id="pin-form" class="mt-6" novalidate=""><label for="private-pin" data-template-id="pin-label" class="canva-text mb-2 block font-semibold" style="white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(217, 229, 223) !important; --canva-color: #d9e5dfff; caret-color: rgb(217, 229, 223) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 0.875rem !important;" data-canva-font-size="0.875rem">Private PIN</label>
+      <div class="relative"><input id="private-pin" data-template-id="pin-input" class="canva-input field focus-ring mono rounded-2xl py-3.5 pl-4 pr-12" type="password" autocomplete="off" minlength="4" maxlength="64" required="" placeholder="Enter at least 4 characters" data-canva-font-size="0.9375rem" style="color: rgb(247, 250, 246) !important; --canva-color: #f7faf6ff; caret-color: rgb(247, 250, 246) !important; font-family: YADW1-vpsoc_0 !important; font-weight: 400 !important; font-style: normal !important; font-size: 0.9375rem !important;"> <button id="toggle-pin" class="focus-ring absolute inset-y-0 right-1 my-1 grid w-10 place-items-center rounded-xl text-[#9bb0a6] hover:text-amber-300" type="button" aria-label="Show PIN"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="eye" class="lucide lucide-eye h-5 w-5" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg> </button>
+      </div>
+      <p id="pin-error" class="mt-2 hidden text-sm font-semibold text-rose-300" role="alert"></p>
+      <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row"><button id="cancel-pin-button" data-template-id="cancel-pin-button" class="canva-button action focus-ring flex-1 rounded-2xl border border-white/15 px-4 py-3.5 font-semibold" type="button" style="background-image: linear-gradient(rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04)) !important; background-clip: border-box !important; white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(229, 238, 233) !important; --canva-color: #e5eee9ff; caret-color: rgb(229, 238, 233) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1rem !important;" data-canva-font-size="1rem">Cancel</button> <button id="submit-encrypt-button" data-template-id="submit-encrypt-button" class="canva-button action focus-ring flex-1 rounded-2xl px-4 py-3.5 font-bold hidden" type="submit" style="background-image: linear-gradient(rgb(240, 184, 75), rgb(240, 184, 75)) !important; background-clip: border-box !important; white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(23, 32, 22) !important; --canva-color: #172016ff; caret-color: rgb(23, 32, 22) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1rem !important;" data-canva-font-size="1rem">Encrypt all</button> <button id="submit-decrypt-button" data-template-id="submit-decrypt-button" class="canva-button action focus-ring flex-1 rounded-2xl px-4 py-3.5 font-bold" type="submit" style="background-image: linear-gradient(rgb(240, 184, 75), rgb(240, 184, 75)) !important; background-clip: border-box !important; white-space: pre-wrap !important; overflow-wrap: normal !important; line-height: normal !important; color: rgb(23, 32, 22) !important; --canva-color: #172016ff; caret-color: rgb(23, 32, 22) !important; font-family: YAD1aU3sLnI_0 !important; font-weight: 700 !important; font-style: normal !important; font-size: 1rem !important;" data-canva-font-size="1rem">Decrypt &amp; restore</button>
+      </div>
+     </form>
+    </section>
+   </div>
+   <div id="toast" class="pointer-events-none fixed bottom-5 left-1/2 z-[60] hidden max-w-[calc(100%-2rem)] -translate-x-1/2 rounded-2xl border border-white/15 bg-[#152d26] px-5 py-3 text-center text-sm font-semibold text-white shadow-2xl" role="status" aria-live="polite"></div>
+   <template id="note-card-template">
+    <article class="note-card rounded-3xl border border-white/10 bg-[#10251f]/80 p-5">
+     <div class="flex items-start justify-between gap-4">
+      <div class="min-w-0 flex-1">
+       <h3 class="note-card-title break-words text-xl font-bold tracking-[-.02em] text-white"></h3>
+       <p class="note-card-date mono mt-2 text-xs uppercase tracking-[.1em] text-emerald-100/55"></p>
+      </div>
+      <div class="flex shrink-0 gap-2"><button class="edit-note focus-ring action grid h-10 w-10 place-items-center rounded-xl border border-white/10 text-emerald-100/75 hover:text-amber-300" type="button" aria-label="Edit note"> <i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i> </button> <button class="delete-note focus-ring action grid h-10 min-w-10 place-items-center rounded-xl border border-rose-300/20 px-3 text-rose-300" type="button" aria-label="Delete note"> <i data-lucide="trash-2" class="delete-note-icon h-4 w-4" aria-hidden="true"></i> <span class="delete-note-confirm hidden text-xs font-bold">Delete?</span> </button>
+      </div>
+     </div>
+     <p class="note-card-content mt-4 whitespace-pre-wrap break-words leading-7 text-[#bfd0c7]"></p>
+    </article>
+   </template>
+  </div>
+  <script>
+    const DASHBOARD_STORAGE_KEY = "intp_dashboard_user";
+    const ENCRYPTED_STORAGE_KEY = "intp_dashboard_private_encrypted";
+    const UID_STORAGE_KEY = "wromo_uid";
+    const GLOBAL_URL_STORAGE_KEY = "intp_dashboard_global_url";
+    const PBKDF2_ITERATIONS = 210000;
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+
+    const defaultDashboard = {
+      version: 2,
+      profile: {
+        name: "Local User",
+        email: "user@example.com",
+        location: "Vienna, Austria",
+        theme: "forest"
+      },
+      notes: [],
+      updated_at: ""
+    };
+
+    let dashboard = cloneValue(defaultDashboard);
+    let editingNoteId = null;
+    let cryptoMode = "encrypt";
+    let lastFocusedElement = null;
+    let dashboardClearArmed = false;
+    let dashboardClearTimer = null;
+    const deleteTimers = new Map();
+
+    const $ = id => document.getElementById(id);
+    const pinModal = $("pin-modal");
+    const pinForm = $("pin-form");
+    const pinInput = $("private-pin");
+    const pinError = $("pin-error");
+    const noteForm = $("note-form");
+    const noteList = $("note-list");
+    const noteTitle = $("note-title");
+    const noteContent = $("note-content");
+    const toast = $("toast");
+
+    function cloneValue(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function createId() {
+      return crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function bytesToBase64(bytes) {
+      let binary = "";
+      bytes.forEach(byte => binary += String.fromCharCode(byte));
+      return btoa(binary);
+    }
+
+    function base64ToBytes(value) {
+      const binary = atob(value);
+      return Uint8Array.from(binary, character => character.charCodeAt(0));
+    }
+
+    function normalizeDashboard(candidate) {
+      if (!candidate || typeof candidate !== "object") throw new Error("Invalid dashboard data");
+
+      const sourceProfile = candidate.profile && typeof candidate.profile === "object"
+        ? candidate.profile
+        : candidate;
+
+      const notes = Array.isArray(candidate.notes)
+        ? candidate.notes.filter(note =>
+            note &&
+            typeof note.id === "string" &&
+            typeof note.title === "string" &&
+            typeof note.content === "string"
+          ).map(note => ({
+            id: note.id,
+            title: note.title,
+            content: note.content,
+            created_at: typeof note.created_at === "string" ? note.created_at : new Date().toISOString(),
+            updated_at: typeof note.updated_at === "string" ? note.updated_at : new Date().toISOString()
+          }))
+        : [];
+
+      return {
+        version: 2,
+        profile: {
+          name: typeof sourceProfile.name === "string" ? sourceProfile.name : defaultDashboard.profile.name,
+          email: typeof sourceProfile.email === "string" ? sourceProfile.email : defaultDashboard.profile.email,
+          location: typeof sourceProfile.location === "string" ? sourceProfile.location : defaultDashboard.profile.location,
+          theme: ["forest", "midnight", "auto"].includes(sourceProfile.theme)
+            ? sourceProfile.theme
+            : defaultDashboard.profile.theme
+        },
+        notes,
+        updated_at: typeof candidate.updated_at === "string" ? candidate.updated_at : ""
+      };
+    }
+
+    function safeReadJson(key) {
+      const raw = localStorage.getItem(key);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    }
+
+    function persistLocalDashboard() {
+      dashboard.updated_at = new Date().toISOString();
+      localStorage.setItem(DASHBOARD_STORAGE_KEY, JSON.stringify(dashboard));
+      applyDashboardToUI();
+      updateStorageStatus();
+    }
+
+    function loadLocalDashboard() {
+      try {
+        const stored = safeReadJson(DASHBOARD_STORAGE_KEY);
+        dashboard = stored ? normalizeDashboard(stored) : cloneValue(defaultDashboard);
+      } catch (error) {
+        dashboard = cloneValue(defaultDashboard);
+        showToast("Local dashboard JSON was invalid; defaults are shown.", "error");
+      }
+      applyDashboardToUI();
+      renderNotes();
+      updateStorageStatus();
+    }
+
+    function applyDashboardToUI() {
+      const profile = dashboard.profile;
+      $("sidebar-user-name").textContent = profile.name;
+      $("sidebar-user-email").textContent = profile.email;
+      $("profile-summary-name").textContent = profile.name;
+      $("profile-summary-email").textContent = profile.email;
+      $("profile-name").value = profile.name;
+      $("profile-email").value = profile.email;
+      $("profile-location").value = profile.location;
+      $("profile-theme").value = profile.theme;
+      $("overview-note-count").textContent = String(dashboard.notes.length);
+      $("last-saved-value").textContent = dashboard.updated_at
+        ? formatDate(dashboard.updated_at)
+        : "Not saved yet";
+    }
+
+    function formatDate(iso) {
+      try {
+        return new Intl.DateTimeFormat(undefined, {
+          dateStyle: "medium",
+          timeStyle: "short"
+        }).format(new Date(iso));
+      } catch (error) {
+        return "Unknown";
+      }
+    }
+
+    function showToast(message, tone = "success") {
+      toast.textContent = message;
+      toast.style.borderColor = tone === "error"
+        ? "rgba(255,122,115,.55)"
+        : tone === "warning"
+          ? "rgba(240,184,75,.5)"
+          : "rgba(129,212,164,.38)";
+      toast.style.color = tone === "error" ? "#ffd0cd" : "#ffffff";
+      toast.classList.remove("hidden");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.add("hidden"), 3600);
+    }
+
+    function switchView(viewName) {
+      document.querySelectorAll(".dashboard-view").forEach(view => {
+        view.hidden = view.id !== `${viewName}-view`;
+      });
+
+      document.querySelectorAll(".nav-button").forEach(button => {
+        const active = button.dataset.view === viewName;
+        button.setAttribute("aria-current", active ? "page" : "false");
+      });
+
+      document.querySelector("main")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function updateStorageStatus() {
+      const hasLocal = !!localStorage.getItem(DASHBOARD_STORAGE_KEY);
+      const hasEncrypted = !!localStorage.getItem(ENCRYPTED_STORAGE_KEY);
+      const localStatus = $("local-data-status");
+      const globalStatus = $("global-data-status");
+
+      localStatus.textContent = hasLocal ? "Saved locally" : "In memory";
+      localStatus.className = hasLocal
+        ? "font-semibold text-emerald-200"
+        : "font-semibold text-amber-200";
+
+      globalStatus.textContent = hasEncrypted ? "Encrypted & ready" : "Not encrypted";
+      globalStatus.className = hasEncrypted
+        ? "font-semibold text-emerald-200"
+        : "font-semibold text-amber-200";
+    }
+
+    function openPinDialog(mode) {
+      cryptoMode = mode;
+      lastFocusedElement = document.activeElement;
+      pinInput.value = "";
+      pinInput.type = "password";
+      pinError.classList.add("hidden");
+
+      const encrypting = mode === "encrypt";
+      $("pin-encrypt-copy").classList.toggle("hidden", !encrypting);
+      $("pin-decrypt-copy").classList.toggle("hidden", encrypting);
+      $("submit-encrypt-button").classList.toggle("hidden", !encrypting);
+      $("submit-decrypt-button").classList.toggle("hidden", encrypting);
+      pinModal.setAttribute("aria-labelledby", encrypting ? "pin-heading-encrypt" : "pin-heading-decrypt");
+
+      pinModal.classList.remove("hidden");
+      pinModal.classList.add("flex");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => pinInput.focus(), 0);
+    }
+
+    function closePinDialog() {
+      pinModal.classList.add("hidden");
+      pinModal.classList.remove("flex");
+      document.body.style.overflow = "";
+      pinInput.value = "";
+      pinError.classList.add("hidden");
+      lastFocusedElement?.focus();
+    }
+
+    function getRequiredKeyParts(pin) {
+      const uid = (localStorage.getItem(UID_STORAGE_KEY) || "").trim();
+      if (!uid) throw new Error("Missing wromo_uid. Both wromo_uid and the private PIN are required.");
+      if (!pin || pin.length < 4) throw new Error("Enter a private PIN with at least four characters.");
+      return { uid, pin };
+    }
+
+    async function deriveEncryptionKey(uid, pin, salt) {
+      const material = await crypto.subtle.importKey(
+        "raw",
+        encoder.encode(`${uid}:${pin}`),
+        "PBKDF2",
+        false,
+        ["deriveKey"]
+      );
+
+      return crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt,
+          iterations: PBKDF2_ITERATIONS,
+          hash: "SHA-256"
+        },
+        material,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+      );
+    }
+
+    async function createEncryptedEnvelope(localDashboard, uid, pin) {
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveEncryptionKey(uid, pin, salt);
+      const ciphertext = await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv },
+        key,
+        encoder.encode(JSON.stringify(localDashboard))
+      );
+
+      return {
+        version: 3,
+        algorithm: "AES-GCM",
+        kdf: "PBKDF2-SHA-256",
+        iterations: PBKDF2_ITERATIONS,
+        encrypted_at: new Date().toISOString(),
+        salt: bytesToBase64(salt),
+        iv: bytesToBase64(iv),
+        ciphertext: bytesToBase64(new Uint8Array(ciphertext))
+      };
+    }
+
+    async function decryptEnvelope(envelope, uid, pin) {
+      if (
+        !envelope ||
+        envelope.version !== 3 ||
+        envelope.algorithm !== "AES-GCM" ||
+        !envelope.salt ||
+        !envelope.iv ||
+        !envelope.ciphertext
+      ) {
+        throw new Error("The encrypted global data is missing or invalid.");
+      }
+
+      const salt = base64ToBytes(envelope.salt);
+      const key = await deriveEncryptionKey(uid, pin, salt);
+      const plaintext = await crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: base64ToBytes(envelope.iv) },
+        key,
+        base64ToBytes(envelope.ciphertext)
+      );
+
+      return normalizeDashboard(JSON.parse(decoder.decode(plaintext)));
+    }
+
+    async function sendEnvelopeIfConfigured(envelope) {
+      const target = (localStorage.getItem(GLOBAL_URL_STORAGE_KEY) || "").trim();
+      if (!target) return { sent: false, reason: "not-configured" };
+
+      let url;
+      try {
+        url = new URL(target);
+      } catch (error) {
+        return { sent: false, reason: "invalid-url" };
+      }
+
+      if (url.protocol !== "https:") return { sent: false, reason: "invalid-url" };
+
+      try {
+        const response = await fetch(url.toString(), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            key: ENCRYPTED_STORAGE_KEY,
+            value: envelope
+          })
+        });
+
+        return response.ok
+          ? { sent: true }
+          : { sent: false, reason: "http-error" };
+      } catch (error) {
+        return { sent: false, reason: "network-error" };
+      }
+    }
+
+    async function encryptWholeDashboard(pin) {
+      const { uid } = getRequiredKeyParts(pin);
+      let localSource = dashboard;
+
+      const stored = safeReadJson(DASHBOARD_STORAGE_KEY);
+      if (stored) localSource = normalizeDashboard(stored);
+
+      const envelope = await createEncryptedEnvelope(localSource, uid, pin);
+      localStorage.setItem(ENCRYPTED_STORAGE_KEY, JSON.stringify(envelope));
+      updateStorageStatus();
+
+      const sendResult = await sendEnvelopeIfConfigured(envelope);
+      closePinDialog();
+
+      if (sendResult.sent) {
+        showToast("The full dashboard was encrypted and sent.");
+      } else if (sendResult.reason === "not-configured") {
+        showToast("The full dashboard was encrypted and is ready to send.", "warning");
+      } else {
+        showToast("Encrypted data was saved, but the configured global URL could not receive it.", "warning");
+      }
+    }
+
+    async function decryptWholeDashboard(pin) {
+      const { uid } = getRequiredKeyParts(pin);
+      const envelope = safeReadJson(ENCRYPTED_STORAGE_KEY);
+      if (!envelope) throw new Error("No intp_dashboard_private_encrypted data is available.");
+
+      const restoredDashboard = await decryptEnvelope(envelope, uid, pin);
+      restoredDashboard.updated_at = new Date().toISOString();
+      localStorage.setItem(DASHBOARD_STORAGE_KEY, JSON.stringify(restoredDashboard));
+      dashboard = restoredDashboard;
+      editingNoteId = null;
+      resetNoteComposer();
+      applyDashboardToUI();
+      renderNotes();
+      updateStorageStatus();
+      closePinDialog();
+      showToast("Global encrypted data was decrypted and rewrote the local dashboard.");
+    }
+
+    function createNoteElement(note) {
+      const fragment = $("note-card-template").content.cloneNode(true);
+      const card = fragment.querySelector("article");
+      card.dataset.noteId = note.id;
+      updateNoteElement(card, note);
+
+      card.querySelector(".edit-note").addEventListener("click", () => beginNoteEdit(note.id));
+      card.querySelector(".delete-note").addEventListener("click", event => {
+        handleNoteDelete(note.id, event.currentTarget);
+      });
+
+      noteList.appendChild(fragment);
+      lucide.createIcons();
+    }
+
+    function updateNoteElement(card, note) {
+      card.querySelector(".note-card-title").textContent = note.title;
+      card.querySelector(".note-card-content").textContent = note.content;
+      card.querySelector(".note-card-date").textContent = `Updated ${formatDate(note.updated_at)}`;
+    }
+
+    function renderNotes() {
+      const existing = new Map(
+        [...noteList.children].map(card => [card.dataset.noteId, card])
+      );
+
+      [...dashboard.notes]
+        .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+        .forEach(note => {
+          const card = existing.get(note.id);
+          if (card) {
+            updateNoteElement(card, note);
+            noteList.appendChild(card);
+            existing.delete(note.id);
+          } else {
+            createNoteElement(note);
+          }
+        });
+
+      existing.forEach(card => card.remove());
+
+      const empty = dashboard.notes.length === 0;
+      $("notes-empty-state").classList.toggle("hidden", !empty);
+      $("notes-empty-state").classList.toggle("flex", empty);
+      $("notes-count").textContent = `${dashboard.notes.length} ${dashboard.notes.length === 1 ? "note" : "notes"}`;
+      $("overview-note-count").textContent = String(dashboard.notes.length);
+    }
+
+    function resetNoteComposer() {
+      editingNoteId = null;
+      noteForm.reset();
+      $("note-error").classList.add("hidden");
+      $("cancel-note-edit").classList.add("hidden");
+      $("cancel-note-edit").classList.remove("flex");
+    }
+
+    function beginNoteEdit(id) {
+      const note = dashboard.notes.find(item => item.id === id);
+      if (!note) return;
+
+      editingNoteId = id;
+      noteTitle.value = note.title;
+      noteContent.value = note.content;
+      $("cancel-note-edit").classList.remove("hidden");
+      $("cancel-note-edit").classList.add("flex");
+      noteTitle.focus();
+      $("notes-composer-panel").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function handleNoteDelete(id, button) {
+      if (button.dataset.armed !== "true") {
+        button.dataset.armed = "true";
+        button.querySelector(".delete-note-icon")?.classList.add("hidden");
+        button.querySelector(".delete-note-confirm")?.classList.remove("hidden");
+        button.setAttribute("aria-label", "Confirm delete note");
+        deleteTimers.set(id, setTimeout(() => resetDeleteButton(button), 3500));
+        return;
+      }
+
+      clearTimeout(deleteTimers.get(id));
+      dashboard.notes = dashboard.notes.filter(note => note.id !== id);
+
+      try {
+        persistLocalDashboard();
+        if (editingNoteId === id) resetNoteComposer();
+        renderNotes();
+        showToast("Note deleted from local dashboard data.");
+      } catch (error) {
+        showToast("The note could not be deleted from local storage.", "error");
+      }
+    }
+
+    function resetDeleteButton(button) {
+      button.dataset.armed = "false";
+      button.querySelector(".delete-note-icon")?.classList.remove("hidden");
+      button.querySelector(".delete-note-confirm")?.classList.add("hidden");
+      button.setAttribute("aria-label", "Delete note");
+    }
+
+    document.querySelectorAll(".nav-button, .nav-shortcut").forEach(button => {
+      button.addEventListener("click", () => switchView(button.dataset.view));
+    });
+
+    $("profile-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const name = $("profile-name").value.trim();
+      const email = $("profile-email").value.trim();
+      const location = $("profile-location").value.trim();
+      const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      if (!name || !validEmail) {
+        $("profile-error").classList.remove("hidden");
+        (!name ? $("profile-name") : $("profile-email")).focus();
+        return;
+      }
+
+      $("profile-error").classList.add("hidden");
+      dashboard.profile = {
+        name,
+        email,
+        location,
+        theme: $("profile-theme").value
+      };
+
+      try {
+        persistLocalDashboard();
+        showToast("Profile saved only to intp_dashboard_user.");
+      } catch (error) {
+        showToast("Profile could not be saved in this browser.", "error");
+      }
+    });
+
+    noteForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const title = noteTitle.value.trim();
+      const content = noteContent.value.trim();
+
+      if (!title || !content) {
+        $("note-error").classList.remove("hidden");
+        (!title ? noteTitle : noteContent).focus();
+        return;
+      }
+
+      $("note-error").classList.add("hidden");
+      const now = new Date().toISOString();
+
+      if (editingNoteId) {
+        dashboard.notes = dashboard.notes.map(note =>
+          note.id === editingNoteId
+            ? { ...note, title, content, updated_at: now }
+            : note
+        );
+      } else {
+        dashboard.notes.push({
+          id: createId(),
+          title,
+          content,
+          created_at: now,
+          updated_at: now
+        });
+      }
+
+      try {
+        persistLocalDashboard();
+        renderNotes();
+        showToast(editingNoteId
+          ? "Note updated in local dashboard data."
+          : "Note added to local dashboard data.");
+        resetNoteComposer();
+        noteTitle.focus();
+      } catch (error) {
+        showToast("The note could not be saved in local storage.", "error");
+      }
+    });
+
+    $("cancel-note-edit").addEventListener("click", () => {
+      resetNoteComposer();
+      noteTitle.focus();
+    });
+
+    $("encrypt-button").addEventListener("click", () => openPinDialog("encrypt"));
+    $("decrypt-button").addEventListener("click", () => openPinDialog("decrypt"));
+    $("close-pin-modal").addEventListener("click", closePinDialog);
+    $("cancel-pin-button").addEventListener("click", closePinDialog);
+
+    pinModal.addEventListener("click", event => {
+      if (event.target === pinModal) closePinDialog();
+    });
+
+    pinForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      pinError.classList.add("hidden");
+      const activeSubmit = cryptoMode === "encrypt"
+        ? $("submit-encrypt-button")
+        : $("submit-decrypt-button");
+      activeSubmit.disabled = true;
+
+      try {
+        if (cryptoMode === "encrypt") {
+          await encryptWholeDashboard(pinInput.value);
+        } else {
+          await decryptWholeDashboard(pinInput.value);
+        }
+      } catch (error) {
+        pinError.textContent = error.message.includes("Missing wromo_uid")
+          ? error.message
+          : cryptoMode === "decrypt"
+            ? "Decryption failed. Check wromo_uid, the private PIN, and the encrypted global data."
+            : error.message;
+        pinError.classList.remove("hidden");
+        pinInput.select();
+      } finally {
+        activeSubmit.disabled = false;
+      }
+    });
+
+    $("toggle-pin").addEventListener("click", () => {
+      const hidden = pinInput.type === "password";
+      pinInput.type = hidden ? "text" : "password";
+      $("toggle-pin").setAttribute("aria-label", hidden ? "Hide PIN" : "Show PIN");
+      pinInput.focus();
+    });
+
+    $("clear-dashboard-button").addEventListener("click", () => {
+      if (!dashboardClearArmed) {
+        dashboardClearArmed = true;
+        document.querySelector('[data-template-id="clear-dashboard-default"]').classList.add("hidden");
+        document.querySelector('[data-template-id="clear-dashboard-confirm"]').classList.remove("hidden");
+        dashboardClearTimer = setTimeout(resetDashboardClear, 4000);
+        return;
+      }
+
+      clearTimeout(dashboardClearTimer);
+      localStorage.removeItem(DASHBOARD_STORAGE_KEY);
+      dashboard = cloneValue(defaultDashboard);
+      resetNoteComposer();
+      applyDashboardToUI();
+      renderNotes();
+      updateStorageStatus();
+      resetDashboardClear();
+      showToast("Local intp_dashboard_user data was cleared.");
+    });
+
+    function resetDashboardClear() {
+      dashboardClearArmed = false;
+      document.querySelector('[data-template-id="clear-dashboard-default"]').classList.remove("hidden");
+      document.querySelector('[data-template-id="clear-dashboard-confirm"]').classList.add("hidden");
+    }
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !pinModal.classList.contains("hidden")) {
+        closePinDialog();
+      }
+
+      if (event.key === "Tab" && !pinModal.classList.contains("hidden")) {
+        const focusable = [...pinModal.querySelectorAll(
+          'button:not([disabled]):not(.hidden), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )];
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    function checkEnvironment() {
+      let storageAvailable = true;
+      try {
+        const testKey = "__dashboard_storage_test__";
+        localStorage.setItem(testKey, "1");
+        localStorage.removeItem(testKey);
+      } catch (error) {
+        storageAvailable = false;
+      }
+
+      const cryptoAvailable = !!window.crypto?.subtle;
+      if (!storageAvailable || !cryptoAvailable) {
+        $("encrypt-button").disabled = true;
+        $("decrypt-button").disabled = true;
+        showToast("This browser does not support the required local encryption tools.", "error");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      checkEnvironment();
+      loadLocalDashboard();
+      switchView("overview");
+    });
+  </script>
+ 
+<canva-element-overlay style="position: fixed; z-index: 2147483647; pointer-events: none;"></canva-element-overlay>
+
+<div 
+    data-wromo-auth 
+    data-wromo-auth-config="./auth-config.json" 
+    data-wromo-auth-redirect="http://localhost/login/"> 
+  </div>
+
+  <script type="module" src="https://cdn.jsdelivr.net/npm/magic-link-signin-wromo@1.0.4/wromo-auth-widget.js" defer=""></script>
+
+</body>
+</html>

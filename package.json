@@ -1,0 +1,21 @@
+{
+  "name": "pin-crypt-anywhere-private-data",
+  "version": "1.0.0",
+  "description": "pin encrypt anywhere user private data : return crypto Key PBKDF2 salt SHA-256 AES-GCM encrypt decrypt",
+  "main": "index.js",
+  "unpkg": "index.js",
+  "jsdelivr": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ghepes/pin-crypt-anywhere-private-data.git"
+  },
+  "keywords": [
+    "anywhere",
+    "AES-GCM",
+    "cdn",
+    "data",
+    "encrypt"
+  ],
+  "author": "Ghepes",
+  "license": "MIT"
+}
