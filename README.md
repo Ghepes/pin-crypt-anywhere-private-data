@@ -24,7 +24,7 @@ npm i pin-crypt-anywhere-private-data
 ```
 ## After install NPM:
 ```
-// Dacă are nevoie de ambele:
+// all:
 import { PrivateDataAnywhere, CloudSyncWidget } from 'pin-crypt-anywhere-private-data';
 
 // Encryption initialization (with UI)
@@ -36,7 +36,7 @@ PrivateDataAnywhere.init({
 
 // Transport initialization (with UI)
 CloudSyncWidget.init({
-  appsScriptUrl: "https://script.google.com/...",
+  appsScriptUrl: "https://script.google.com/...bucket",
   storageKey: "date_crypt"
 });
 ```
@@ -49,7 +49,7 @@ CloudSyncWidget.init({
 ## 1. Web Dashboard connect your URL, storage Key end UID user. Example:
 ```
 <script>
-  // Inițializezi pachetul cu datele tale specifice
+  // Initialize the package with your specific data
   CloudSyncWidget.init({
     appsScriptUrl: "https://script.google.com/macros/s/AKxxxxxxxxxxxxxxxxKO7AlaABBB66665oLS7BDKYNjrLImgIqJ-k-Wjt8xUR_WeiF/exec",
     storageKey: "intp_dashboard_private_encrypted"
@@ -106,3 +106,11 @@ Copy the index.html code and test it locally to understand the encryption logic 
 
 
 For a quick solution to the uid data issue, I suggest adding Login via Magic Links from Firebase: https://www.npmjs.com/package/magic-link-signin-wromo
+
+
+## Private Data safe: The user is sure that no one can read their private data, even if it were in the Public Cloud. No one can decrypt and read the users data! Decrypted visible data remains in local storage: and does not leave the users device. When private data leaves the device: it is 100% encrypted.
+## This way, companies use a simple UID code from the login: and that's all they have from the user.
+## If Hackers copy the data, they have no way to decrypt it.
+## Companies can use: Cookie tracking - But without losing sensitive data
+![Pin/Encryption](<Screenshot_pin-crypt-anywhere-private-data.png>)
+![User Dashboard](<Screenshot_pin-crypt-anywhere-private.png>)
