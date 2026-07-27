@@ -157,4 +157,6 @@ window.PrivateDataAnywhere = (function () {
 })();
 
   // Export npm data
+if (typeof module !== 'undefined' && module.exports) {
   module.exports = PrivateDataAnywhere;
+}

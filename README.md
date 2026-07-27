@@ -5,6 +5,17 @@ In this NPM Widgets logic there are two separate logics:
 1. Transport encrypted files to global cloud or upload
 2. Total deletion of user dashboard data from local storage (Dashboard must save all data in a single KEY Name JSON)
 
+## v1.0.1
+
+encryptedKey: "xxx_xyz_enkrypt", =  storageKey: "xxx_xyz_enkrypt"
+
+
+CDN mode:
+Do not use defer> to js url 
+Widget code: must be called after page load
+
+
+
 
 ## Install NPM :
 ```
@@ -32,7 +43,7 @@ CloudSyncWidget.init({
 
 ## 1. CDN :
 ```
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.0/transport-data.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.1/transport-data.js"></script>
 ```
 
 ## 1. Web Dashboard connect your URL, storage Key end UID user. Example:
@@ -60,14 +71,14 @@ CloudSyncWidget.init({
 
 ## 2. CDN :
 ```
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.0/crypto-widget.js" defer></script> 
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.1/crypto-widget.js"></script> 
 ```
 
 ## Web Dashbord :
 
 ```
 <!-- a. Upload your published package -->
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.0/crypto-widget.js" defer></script> 
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.1/crypto-widget.js"></script> 
 
 <!-- b. Start the widget with your keys of local storage Key page -->
 <script>
@@ -89,7 +100,7 @@ Merge 1. transport-data.js and 2. crypto-widget.js into the same page: the butto
 
 ## Test Real Demo in web dashboard, via static index.html:
 ```
-https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.0/dash/index.html
+https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.1/dash/index.html
 ```
 Copy the index.html code and test it locally to understand the encryption logic between user local data web page  storage and its encryption.
 

@@ -88,4 +88,7 @@ const CloudSyncWidget = {
 // module.exports = CloudSyncWidget; (for CommonJS)
 // or: export default CloudSyncWidget; (for ES Modules)
 // Export pentru NPM
-module.exports = CloudSyncWidget;
+// În loc de: module.exports = CloudSyncWidget;
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = CloudSyncWidget;
+}
