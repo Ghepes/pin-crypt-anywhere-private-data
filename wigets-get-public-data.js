@@ -82,7 +82,7 @@ window.PublicDataFetcher = (function () {
 
           if (foundPayload) {
             localStorage.setItem(config.storageKey, foundPayload);
-            console.log(`Datele au fost extrase din Sheet și salvate în '${config.storageKey}'.`);
+            console.log(`The data has been extracted from the Sheet and saved to '${config.storageKey}'.`);
           } else {
             console.warn(`UID '${uid}' was not found in Sheet.`);
           }
