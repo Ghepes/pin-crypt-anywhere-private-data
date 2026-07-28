@@ -1,4 +1,4 @@
-/* Studio Wromo v1.0.2 MIT - trasport-data.js  Execute only with BACKEND URL request method for All type of backend to Send or GET data to web local storage  */
+/* Studio Wromo v1.0.3 MIT - trasport-data.js  Execute only with BACKEND URL request method for All type of backend to Send or GET data to web local storage  */
 const CloudSyncWidget = {
   // Default settings overridden by init
   config: {

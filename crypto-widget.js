@@ -1,5 +1,5 @@
+/* Studio Wromo v1.0.3 MIT - crypto-widget.js  Execute only the intern data encrypt decrypt algorithm: "AES-GCM" with user privat pin  */
 window.PrivateDataAnywhere = (function () {
-  // Default settings be overridden to dashboard : INFO to NPM pin-crypt-anywhere-private-data: by Studio Wromo 2026 MIT 
   const config = {
     dashboardKey: "intp_dashboard_user",
     encryptedKey: "intp_dashboard_private_encrypted",

@@ -1,6 +1,6 @@
 {
   "name": "pin-crypt-anywhere-private-data",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "pin encrypt anywhere user private data : return crypto Key PBKDF2 salt SHA-256 AES-GCM encrypt decrypt",
   "main": "index.js",
   "unpkg": "index.js",

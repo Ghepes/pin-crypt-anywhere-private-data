@@ -5,6 +5,9 @@ In this NPM Widgets logic there are two separate logics:
 1. Transport encrypted files to global cloud or upload
 2. Total deletion of user dashboard data from local storage (Dashboard must save all data in a single KEY Name JSON)
 
+## v1.0.3
+README.md
+
 ## v1.0.2
 In version v1.0.2: 
 - a new file with the "GET public data" logic was added: wigets-get-public-data.js
@@ -90,7 +93,7 @@ CloudSyncWidget.init({
 ## 1. transport-data.js : the transport from local to cloud and back, after it was encrypted! User data leaves localhost only Encrypted in cloud public.
 ## 1. Web Dashboard connect your URL, storage Key end UID user. Example:
 ```
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.2/transport-data.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/transport-data.js"></script>
 <script>
   <!-- Add your keys global storage: appsScriptUrl, storageKey, uidKey  -->
   CloudSyncWidget.init({
@@ -117,7 +120,7 @@ CloudSyncWidget.init({
 
 ```
 <!-- crypto widget local storage -->
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.2/crypto-widget.js"></script> 
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/crypto-widget.js"></script> 
 
 <!-- Add your keys local storage: dashboardKey, encryptedKey, uidKey  -->
 <script>
@@ -139,9 +142,10 @@ CloudSyncWidget.init({
 
 ##  wigets-get-public-data.js : Execute only the public GET data request - method for sheet or any type of bucket url */
 
-For public Google Sheet:
-````
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.2/wigets-get-public-data.js"></script> 
+## For public Google Sheet:
+
+```
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/wigets-get-public-data.js"></script> 
 <script>
 PublicDataFetcher.init({
 uidKey: "user_id",
@@ -156,11 +160,13 @@ sheetTab: "Date_Private"
 <!-- Call the PublicDataFetcher object and the fetchPublicData function -->
 <button onclick="PublicDataFetcher.fetchPublicData()">⬇️ Request to Local</button>
 </div>
+
 ```
 
-For all public Bucket url:
+## For all public Bucket url:
+
 ```
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.2/wigets-get-public-data.js"></script> 
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/wigets-get-public-data.js"></script> 
 <script>
 PublicDataFetcher.init({
 uidKey: "xyz_uid",
@@ -180,8 +186,9 @@ To add the ⬆️ Send option: you must include the backend options below via tr
 
 
 ## Test Real Demo in web dashboard, via static index.html:
+
 ```
-https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.2/dash/index.html
+https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/dash/index.html
 ```
 Copy the index.html code and test it locally to understand the encryption logic between user local data web page  storage and its encryption.
 
@@ -194,5 +201,5 @@ For a quick solution to the uid data issue, I suggest adding Login via Magic Lin
 ## If Hackers copy the data, they have no way to decrypt it.
 ## Companies can use: Cookie tracking - But without losing sensitive data
 
-![Pin/Encryption](<dash/Screenshot_pin-crypt-anywhere-private-data.png>)
-![User Dashboard](<dash/Screenshot_pin-crypt-anywhere-private.png>)
+![Pin/Encryption](<./dash/Screenshot_pin-crypt-anywhere-private-data.png>)
+![User Dashboard](<./dash/Screenshot_pin-crypt-anywhere-private.png>)
