@@ -7,6 +7,50 @@ In this NPM Widgets logic there are two separate logics:
 
 ## v1.0.2
 
+##  wigets-get-public-data.js : Execute only the public GET data request - method for sheet or any type of bucket url */
+
+For public Google Sheet:
+````
+<script>
+PublicDataFetcher.init({
+uidKey: "user_id",
+storageKey: "my_custom_storage_key",
+sheetId: "13KqImbXXXXxxx-i-GXZzxrm-sIICC5ZE",
+sheetTab: "Date_Private"
+});
+
+// Call (e.g. on a button) - PublicDataFetcher.fetchPublicData();
+</script>
+
+<div id="public-data-fetcher">
+<!-- Call the PublicDataFetcher object and the fetchPublicData function -->
+<button onclick="PublicDataFetcher.fetchPublicData()">⬇️ Request to Local</button>
+</div>
+```
+
+For all public Bucket url:
+```
+<script>
+PublicDataFetcher.init({
+uidKey: "xyz_uid",
+storageKey: "onnx_chats_enkrypt",
+publicUrl: "https://pub.domain-your.com/date/"
+});
+
+// Call (e.g. on a button) - PublicDataFetcher.fetchPublicData();
+</script>
+
+<div id="public-data-fetcher">
+<!-- Call the PublicDataFetcher object and the fetchPublicData function -->
+<button onclick="PublicDataFetcher.fetchPublicData()">⬇️ Request to Local</button>
+</div> 
+```
+
+To add the ⬆️ Send option: you must include the backend options below via transport-data.js
+
+
+
+
 1. Sending (One universal execution) to BACKEND :
 Sending to a single standard method. It doesn't matter if you have Google Apps Script, Cloud Run, serverless or something else behind it.
 
@@ -32,7 +76,7 @@ API GET (Backend fetches): You make a request fetch(url_backend?uid=your_ID). Th
 
 B. Public Get (4 ways)
 
-This method is only if we are talking about public data like products, blog posts and others!
+This method only about public data like products, blog posts and others, or maps.json: all in one json!
 Pure JSON (Bucket / R2): You do fetch(url_public.json). You download a huge array/object. The local script iterates through it, finds the row where wromo_uid matches and extracts the payload.
 
 For specific uid data for a specific user, this method is used: Pure JSON (Bucket / R2): You do fetch(wromo_uid.json) specifically to a domain bucket where you already know it is located the wromo_uid.json, on request only asks for the user's json uid. You download only the specific array/object_uid json.
