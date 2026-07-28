@@ -30,9 +30,12 @@ A. Private Get (1 way)
 
 API GET (Backend fetches): You make a request fetch(url_backend?uid=your_ID). The backend checks the identity/parameter and returns a clean JSON with just your data (ex: { "payload": "..." }).
 
-B. Public Get (3 ways)
+B. Public Get (4 ways)
 
+This method is only if we are talking about public data like products, blog posts and others!
 Pure JSON (Bucket / R2): You do fetch(url_public.json). You download a huge array/object. The local script iterates through it, finds the row where wromo_uid matches and extracts the payload.
+
+For specific uid data for a specific user, this method is used: Pure JSON (Bucket / R2): You do fetch(wromo_uid.json) specifically to a domain bucket where you already know it is located the wromo_uid.json, on request only asks for the user's json uid. You download only the specific array/object_uid json.
 
 Google Sheets Gviz (Hidden Endpoint): You do fetch(url_gviz). Google gives you the data, but corrupts it by adding executable text (/*O_o*/). Here the code is completely different because it has to cut off the unnecessary text, parse the JSON and navigate through the table.rows.
 
