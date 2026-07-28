@@ -1,4 +1,4 @@
-/* Studio Wromo v1.0.3 MIT - wigets-get-public-data.js  Execute only the public GET data request method for sheet or any type of bucket url */
+/* Studio Wromo v1.0.4 MIT - wigets-get-public-data.js  Execute only the public GET data request method for sheet or any type of bucket url */
 window.PublicDataFetcher = (function () {
   const config = {
     uidKey: "id_user", 
