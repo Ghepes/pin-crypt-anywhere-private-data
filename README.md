@@ -84,14 +84,14 @@ import { PrivateDataAnywhere, CloudSyncWidget } from 'pin-crypt-anywhere-private
 // Encryption initialization (with UI)
 PrivateDataAnywhere.init({
   dashboardKey: "date_dashboard",
-  encryptedKey: "date_crypt",
+  encryptedKey: "example_xyz_private_encrypted",
   uidKey: "id_user"
 });
 
 // Transport initialization (with UI)
 CloudSyncWidget.init({
   appsScriptUrl: "https://script.google.com/...bucket",
-  storageKey: "date_crypt"
+  storageKey: "example_xyz_private_encrypted"
   uidKey: "id_user"
 });
 ```
