@@ -128,7 +128,7 @@ CloudSyncWidget.init({
 
 ```
 <!-- crypto widget local storage -->
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/crypto-widget.js" integrity="sha512-RShFT76uzq0YKac1FTqL3Zpbj2AzaaSOgWQ6ABRcXx4LHTjDPkZOnkTmMs11w5ZgkfI5YNrkbnh6O+ZEWxsBlQ==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.4/crypto-widget.js" integrity="sha512-RShFT76uzq0YKac1FTqL3Zpbj2AzaaSOgWQ6ABRcXx4LHTjDPkZOnkTmMs11w5ZgkfI5YNrkbnh6O+ZEWxsBlQ==" crossorigin="anonymous"></script>
 
 <!-- Add your keys local storage: dashboardKey, encryptedKey, uidKey  -->
 <script>
@@ -153,7 +153,7 @@ CloudSyncWidget.init({
 ## For public Google Sheet:
 
 ```
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/wigets-get-public-data.js" integrity="sha512-rDu13F1UysZ5gjjCVzwNDB10A33qaiuTBSfK5AVonkzCabafSKhciIhuuJ0Hbfi26WyC+AhEvwfgXlwJKCgvzw==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.4/wigets-get-public-data.js" integrity="sha512-rDu13F1UysZ5gjjCVzwNDB10A33qaiuTBSfK5AVonkzCabafSKhciIhuuJ0Hbfi26WyC+AhEvwfgXlwJKCgvzw==" crossorigin="anonymous"></script>
 <script>
 PublicDataFetcher.init({
 uidKey: "user_id",
@@ -174,7 +174,7 @@ sheetTab: "Date_Private"
 ## For all public Bucket url:
 
 ```
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/wigets-get-public-data.js" integrity="sha512-rDu13F1UysZ5gjjCVzwNDB10A33qaiuTBSfK5AVonkzCabafSKhciIhuuJ0Hbfi26WyC+AhEvwfgXlwJKCgvzw==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.4/wigets-get-public-data.js" integrity="sha512-rDu13F1UysZ5gjjCVzwNDB10A33qaiuTBSfK5AVonkzCabafSKhciIhuuJ0Hbfi26WyC+AhEvwfgXlwJKCgvzw==" crossorigin="anonymous"></script>
 <script>
 PublicDataFetcher.init({
 uidKey: "xyz_uid",
@@ -196,7 +196,7 @@ To add the ⬆️ Send option: you must include the backend options below via tr
 ## Test Real Demo in web dashboard, via static index.html:
 
 ```
-https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/dash/index.html
+https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.4/dash/index.html
 ```
 Copy the index.html code and test it locally to understand the encryption logic between user local data web page  storage and its encryption.
 
