@@ -93,7 +93,7 @@ CloudSyncWidget.init({
 ## 1. transport-data.js : the transport from local to cloud and back, after it was encrypted! User data leaves localhost only Encrypted in cloud public.
 ## 1. Web Dashboard connect your URL, storage Key end UID user. Example:
 ```
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/transport-data.js" integrity="sha512-uiNvVwfG0hz53wWTQMS85lEGaHhz2FQU3yPVGE1L5nqsrPE6wkjnMir/gXyFkybHsZ9uAJwm7A5XClZmrH2Dsg==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/transport-data.js" integrity="sha512-11ahKeIq5lsUzmJmzpDF2214t4Xhgbk2G2l0vQv26N/KXazQRHFf0YQe9KPz2NNtLBd9Ekp3W7mWBErxZ+78qA==" crossorigin="anonymous"></script>
 <script>
   <!-- Add your keys global storage: appsScriptUrl, storageKey, uidKey  -->
   CloudSyncWidget.init({
@@ -120,7 +120,7 @@ CloudSyncWidget.init({
 
 ```
 <!-- crypto widget local storage -->
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/crypto-widget.js" integrity="sha512-uiNvVwfG0hz53wWTQMS85lEGaHhz2FQU3yPVGE1L5nqsrPE6wkjnMir/gXyFkybHsZ9uAJwm7A5XClZmrH2Dsg==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/crypto-widget.js" integrity="sha512-11ahKeIq5lsUzmJmzpDF2214t4Xhgbk2G2l0vQv26N/KXazQRHFf0YQe9KPz2NNtLBd9Ekp3W7mWBErxZ+78qA==" crossorigin="anonymous"></script>
 
 <!-- Add your keys local storage: dashboardKey, encryptedKey, uidKey  -->
 <script>
@@ -145,7 +145,7 @@ CloudSyncWidget.init({
 ## For public Google Sheet:
 
 ```
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/wigets-get-public-data.js" integrity="sha512-uiNvVwfG0hz53wWTQMS85lEGaHhz2FQU3yPVGE1L5nqsrPE6wkjnMir/gXyFkybHsZ9uAJwm7A5XClZmrH2Dsg==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/wigets-get-public-data.js" integrity="sha512-11ahKeIq5lsUzmJmzpDF2214t4Xhgbk2G2l0vQv26N/KXazQRHFf0YQe9KPz2NNtLBd9Ekp3W7mWBErxZ+78qA==" crossorigin="anonymous"></script>
 <script>
 PublicDataFetcher.init({
 uidKey: "user_id",
@@ -166,7 +166,7 @@ sheetTab: "Date_Private"
 ## For all public Bucket url:
 
 ```
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/wigets-get-public-data.js" integrity="sha512-uiNvVwfG0hz53wWTQMS85lEGaHhz2FQU3yPVGE1L5nqsrPE6wkjnMir/gXyFkybHsZ9uAJwm7A5XClZmrH2Dsg==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/wigets-get-public-data.js" integrity="sha512-11ahKeIq5lsUzmJmzpDF2214t4Xhgbk2G2l0vQv26N/KXazQRHFf0YQe9KPz2NNtLBd9Ekp3W7mWBErxZ+78qA==" crossorigin="anonymous"></script>
 <script>
 PublicDataFetcher.init({
 uidKey: "xyz_uid",
