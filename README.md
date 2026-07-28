@@ -194,5 +194,5 @@ For a quick solution to the uid data issue, I suggest adding Login via Magic Lin
 ## If Hackers copy the data, they have no way to decrypt it.
 ## Companies can use: Cookie tracking - But without losing sensitive data
 
-![Pin/Encryption](</dash/Screenshot_pin-crypt-anywhere-private-data.png>)
-![User Dashboard](</dash/Screenshot_pin-crypt-anywhere-private.png>)
+![Pin/Encryption](<dash/Screenshot_pin-crypt-anywhere-private-data.png>)
+![User Dashboard](<dash/Screenshot_pin-crypt-anywhere-private.png>)
