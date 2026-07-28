@@ -157,7 +157,7 @@ CloudSyncWidget.init({
 <script>
 PublicDataFetcher.init({
 uidKey: "user_id",
-storageKey: "my_custom_storage_key",
+storageKey: "example_xyz_private_encrypted",
 sheetId: "13KqImbXXXXxxx-i-GXZzxrm-sIICC5ZE",
 sheetTab: "Date_Private"
 });
@@ -178,7 +178,7 @@ sheetTab: "Date_Private"
 <script>
 PublicDataFetcher.init({
 uidKey: "xyz_uid",
-storageKey: "onnx_chats_enkrypt",
+storageKey: "example_xyz_private_encrypted",
 publicUrl: "https://pub.domain-your.com/date/"
 });
 
