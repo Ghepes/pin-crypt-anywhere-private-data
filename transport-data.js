@@ -1,23 +1,24 @@
+/* Studio Wromo v1.0.2 MIT - trasport-data.js  Execute only with BACKEND URL request method for All type of backend to Send or GET data to web local storage  */
 const CloudSyncWidget = {
-  // Default (empty) settings that will be overwritten from the dashboard: by Studio Wromo 2026 MIT
+  // Default settings overridden by init
   config: {
     appsScriptUrl: null,
-    storageKey: "intp_dashboard_private_encrypted", // a default value
-    uid: null
+    storageKey: "xyz_private_encrypted",
+    uidKey: "xyz_uid" // default value
   },
 
-  // The function through which the npm package user enters data
+  // We take the desired name
   init(options) {
     if (options.appsScriptUrl) this.config.appsScriptUrl = options.appsScriptUrl;
     if (options.storageKey) this.config.storageKey = options.storageKey;
-    if (options.uid) this.config.uid = options.uid;
+    if (options.uidKey) this.config.uidKey = options.uidKey; // We take the desired name
   },
 
   getUid() {
-    // Takes the manually injected UID OR the one from localStorage
-    const uid = this.config.uid || localStorage.getItem("wromo_uid");
+    // Read the value from localStorage using the NAME set in the configuration
+    const uid = localStorage.getItem(this.config.uidKey);
     if (!uid) {
-      alert("You must log in before syncing data!");
+      alert(`You must log in! (The key is missing: ${this.config.uidKey})`);
     }
     return uid;
   },
@@ -27,7 +28,7 @@ const CloudSyncWidget = {
     if (!uid) return;
     
     if (!this.config.appsScriptUrl) {
-      console.error("Error: APPS_SCRIPT_URL was not configured by .init()");
+      console.error("Error: BACKEND_URL was not configured");
       return;
     }
 
@@ -63,7 +64,7 @@ const CloudSyncWidget = {
     if (!uid) return;
     
     if (!this.config.appsScriptUrl) {
-      console.error("Error: APPS_SCRIPT_URL was not configured via .init()");
+      console.error("Error: BACKEND_URL was not configured");
       return;
     }
 
@@ -84,11 +85,9 @@ const CloudSyncWidget = {
     }
   }
 };
-// Export for NPM
-// module.exports = CloudSyncWidget; (for CommonJS)
-// or: export default CloudSyncWidget; (for ES Modules)
-// Export pentru NPM
-// În loc de: module.exports = CloudSyncWidget;
+
+// We protect the export of NPM
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = CloudSyncWidget;
 }
+
