@@ -5,6 +5,41 @@ In this NPM Widgets logic there are two separate logics:
 1. Transport encrypted files to global cloud or upload
 2. Total deletion of user dashboard data from local storage (Dashboard must save all data in a single KEY Name JSON)
 
+## v1.0.2
+
+1. Sending (One universal execution) to BACKEND :
+Sending to a single standard method. It doesn't matter if you have Google Apps Script, Cloud Run, serverless or something else behind it.
+
+The mandatory pattern that the backend must respect:
+
+Accept an HTTP POST (or PUT) request.
+
+Be able to read a body in JSON format with the fixed structure:
+
+{ "uid": "value_id", "payload": "date_encrypted_long", "type": "private" }
+
+Once the backend receives this standard package, it is responsible for the internal logic (where it writes the data, how it formats it). Local script only does the sending.
+
+2. Receiving (Private vs. Public)
+A. Private data url, the server thinks and only gives you your package. 
+B. Public data url, you download entire registry (the entire database), the local script looks for the UID and extracts it.
+
+Here are the 4 different ways to get data:
+
+A. Private Get (1 way)
+
+API GET (Backend fetches): You make a request fetch(url_backend?uid=your_ID). The backend checks the identity/parameter and returns a clean JSON with just your data (ex: { "payload": "..." }).
+
+B. Public Get (3 ways)
+
+Pure JSON (Bucket / R2): You do fetch(url_public.json). You download a huge array/object. The local script iterates through it, finds the row where wromo_uid matches and extracts the payload.
+
+Google Sheets Gviz (Hidden Endpoint): You do fetch(url_gviz). Google gives you the data, but corrupts it by adding executable text (/*O_o*/). Here the code is completely different because it has to cut off the unnecessary text, parse the JSON and navigate through the table.rows.
+
+<head> Inject (Global Variable) Method: As you may have noticed in DevTools, public data is attached directly to the HTML (e.g. <script src="database.js"></script> containing const GLOBAL_DATA = [...]). In this case, fetch() is no longer used. Your code simply reads the GLOBAL_DATA variable directly from the page's memory, finds the UID, and "Swaps" it directly into localStorage.
+
+
+
 ## v1.0.1
 
 encryptedKey: "xxx_xyz_enkrypt", =  storageKey: "xxx_xyz_enkrypt"
