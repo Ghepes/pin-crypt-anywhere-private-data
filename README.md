@@ -5,12 +5,27 @@ In this NPM Widgets logic there are two separate logics:
 1. Transport encrypted files to global cloud or upload
 2. Total deletion of user dashboard data from local storage (Dashboard must save all data in a single KEY Name JSON)
 
+## v1.0.5
+Correcting README.md Current integrity number:
+You can use the integrity formula yourself to find the correct hash number.
+
+```
+node -e "console.log('sha512-' + require('crypto').createHash('sha512').update(require('fs').readFileSync('ADD__FILE__EXAMPLE.js')).digest('base64'))"
+```
+List the integrity number of that file: a simple change of letter changes the integrity number, which is no longer related to the real file from NPM CDN packages: therefore it must be identical!
+
+EACH FILE HAS ITS OWN INTEGRITY!!!
+
+There is also an integrity hash on the entire NPM project: that number is only per TOTAL NPM Packaging: And it is not used on a single file.
+
+The command used for packaging Total NPM is:
+where the project is formed in json Maps and lists the data of each file and what size,  the project is packaged in gz file format
+```
+npm pack --json
+```
+
 ## v1.0.4
-node -e "console.log('sha512-' + require('crypto').createHash('sha512').update(require('fs').readFileSync('FILE_EXAMPLE.js')).digest('base64'))"
-
-integrity="..."
-
-or per total: npm pack --json
+Rearrange README.md
 
 
 ## v1.0.3
@@ -101,7 +116,7 @@ CloudSyncWidget.init({
 ## 1. transport-data.js : the transport from local to cloud and back, after it was encrypted! User data leaves localhost only Encrypted in cloud public.
 ## 1. Web Dashboard connect your URL, storage Key end UID user. Example:
 ```
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.3/transport-data.js" integrity="sha512-TUsB5Nr9YqHG1ddtnyHFKtkoplls2BlJ72jWCmqLfpZSBWQTXOsEN0wj/tayoVKv2FJsPTvov2ePeuQqxJAC5A==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.5/transport-data.js" integrity="sha512-TUsB5Nr9YqHG1ddtnyHFKtkoplls2BlJ72jWCmqLfpZSBWQTXOsEN0wj/tayoVKv2FJsPTvov2ePeuQqxJAC5A==" crossorigin="anonymous"></script>
 <script>
   <!-- Add your keys global storage: appsScriptUrl, storageKey, uidKey  -->
   CloudSyncWidget.init({
@@ -128,7 +143,7 @@ CloudSyncWidget.init({
 
 ```
 <!-- crypto widget local storage -->
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.4/crypto-widget.js" integrity="sha512-RShFT76uzq0YKac1FTqL3Zpbj2AzaaSOgWQ6ABRcXx4LHTjDPkZOnkTmMs11w5ZgkfI5YNrkbnh6O+ZEWxsBlQ==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.5/crypto-widget.js" integrity="sha512-AGOzyn30V6tXWLrlTOqhUboEuxW7z9/+ZgTgzd7SKEVjHpWtPTWRZ6emVd587L3UBgwGi8UtEcsHVQqUcrCNnQ==" crossorigin="anonymous"></script>
 
 <!-- Add your keys local storage: dashboardKey, encryptedKey, uidKey  -->
 <script>
@@ -153,7 +168,7 @@ CloudSyncWidget.init({
 ## For public Google Sheet:
 
 ```
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.4/wigets-get-public-data.js" integrity="sha512-rDu13F1UysZ5gjjCVzwNDB10A33qaiuTBSfK5AVonkzCabafSKhciIhuuJ0Hbfi26WyC+AhEvwfgXlwJKCgvzw==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.5/wigets-get-public-data.js" integrity="sha512-6nDO1trJF8lgWWZn6LKTvZNe/hMOOtcbDZ2bEItXfDJQE6SLpXg3VkyENTo+ZBZq+vx3qjL+dWec3zRZdrn7gw==" crossorigin="anonymous"></script>
 <script>
 PublicDataFetcher.init({
 uidKey: "user_id",
@@ -174,7 +189,7 @@ sheetTab: "Date_Private"
 ## For all public Bucket url:
 
 ```
-<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.4/wigets-get-public-data.js" integrity="sha512-rDu13F1UysZ5gjjCVzwNDB10A33qaiuTBSfK5AVonkzCabafSKhciIhuuJ0Hbfi26WyC+AhEvwfgXlwJKCgvzw==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.5/wigets-get-public-data.js" integrity="sha512-6nDO1trJF8lgWWZn6LKTvZNe/hMOOtcbDZ2bEItXfDJQE6SLpXg3VkyENTo+ZBZq+vx3qjL+dWec3zRZdrn7gw==" crossorigin="anonymous"></script>
 <script>
 PublicDataFetcher.init({
 uidKey: "xyz_uid",
@@ -196,7 +211,7 @@ To add the ⬆️ Send option: you must include the backend options below via tr
 ## Test Real Demo in web dashboard, via static index.html:
 
 ```
-https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.4/dash/index.html
+https://cdn.jsdelivr.net/npm/pin-crypt-anywhere-private-data@1.0.5/dash/index.html
 ```
 Copy the index.html code and test it locally to understand the encryption logic between user local data web page  storage and its encryption.
 
